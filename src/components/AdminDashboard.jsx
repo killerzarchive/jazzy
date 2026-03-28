@@ -253,12 +253,12 @@ export default function AdminDashboard({ products, onProductsChange }) {
 
           <Field label="Product name" name="name" value={form.name} onChange={handleChange} required />
 
-          <div className="grid grid-cols-2 gap-4 gap-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <Field label="Price ($)" name="price" value={form.price} onChange={handleChange} required type="number" step="0.01" />
             <Field label="Compare at ($)" name="originalPrice" value={form.originalPrice} onChange={handleChange} type="number" step="0.01" />
           </div>
 
-          <div className="grid grid-cols-2 gap-4 gap-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="flex flex-col gap-2">
               <label className="text-[9px] tracking-[0.35em] uppercase text-black/30 font-semibold">Category</label>
               <select
@@ -370,30 +370,28 @@ export default function AdminDashboard({ products, onProductsChange }) {
                   </div>
 
                   <div className="flex items-center gap-1 flex-shrink-0">
-                    {/* Edit */}
                     <button
                       onClick={() => startEdit(p)}
-                      className="w-9 h-9 rounded-full flex items-center justify-center text-black/25 active:text-black active:bg-black/[0.06] transition-all"
+                      className="w-10 h-10 rounded-full flex items-center justify-center text-black/30 active:text-black active:bg-black/[0.06] transition-all"
                     >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
                     </button>
 
-                    {/* Delete */}
                     {deleteConfirm === p.id ? (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
                         <button onClick={() => handleDelete(p.id)} className="text-[10px] tracking-wider uppercase font-bold text-white bg-black px-3 py-2 rounded-xl active:scale-95 transition-all">
                           Delete
                         </button>
                         <button onClick={() => setDeleteConfirm(null)} className="text-[10px] tracking-wider uppercase font-bold text-black/40 active:text-black transition-colors px-2 py-2">
-                          Cancel
+                          No
                         </button>
                       </div>
                     ) : (
                       <button
                         onClick={() => setDeleteConfirm(p.id)}
-                        className="w-9 h-9 rounded-full flex items-center justify-center text-black/25 active:text-black active:bg-black/[0.06] transition-all"
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-black/30 active:text-black active:bg-black/[0.06] transition-all"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
