@@ -5,6 +5,7 @@ export const navLinks = [
   { id: 'rugs',        label: 'Rugs' },
   { id: 'accessories', label: 'Accessories' },
   { id: 'contact',     label: 'Contact' },
+  { id: 'vendor',      label: 'Vendor' },
 ]
 
 export const products = [

@@ -14,6 +14,7 @@ import Search from "./components/Search";
 import AnnouncementBar from "./components/AnnouncementBar";
 import CategoryBanner from "./components/CategoryBanner";
 import AdminDashboard from "./components/AdminDashboard";
+import VendorPage from "./components/VendorPage";
 import { getProducts } from "./lib/api";
 
 // ── localStorage cart (no login required for shoppers) ──
@@ -137,6 +138,8 @@ export default function App() {
       setActivePage("contact");
     } else if (id === "admin") {
       setCurrentSection(null); setActivePage("admin")
+    } else if (id === "vendor") {
+      setCurrentSection(null); setActivePage("vendor")
     } else if (id === "cart" || id === "checkout") {
       setCurrentSection(null);
       setActivePage(id);
@@ -240,6 +243,8 @@ export default function App() {
             />
           ) : activePage === "contact" ? (
             <Contact />
+          ) : activePage === "vendor" ? (
+            <VendorPage />
           ) : currentProduct ? (
             <ProductPage product={currentProduct} onAddToCart={handleAddToCart} />
           ) : currentSection ? (
