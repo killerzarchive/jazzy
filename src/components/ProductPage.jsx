@@ -26,7 +26,7 @@ export default function ProductPage({ product, onAddToCart }) {
 
   return (
     <div className="min-h-screen pb-28 ">
-      <div className="grid mt-8 sm:grid-cols-2 gap-0 md:gap-10 p-12">
+      <div className="grid mt-8 sm:grid-cols-2 gap-0 md:gap-10 p-5 sm:p-12">
 
         {/* ── LEFT: Media ── */}
         <div className="flex flex-col gap-3">
