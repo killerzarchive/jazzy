@@ -1,18 +1,27 @@
-/**
- * Upload a product image via our server-side API route.
- * The route uses the Supabase service role key and auto-creates
- * the bucket if it doesn't exist.
- */
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
+const ANON_KEY     = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const BUCKET       = 'products'
+
+// Upload directly from browser to Supabase — bypasses Vercel's 4.5MB function limit
 export async function uploadProductImage(file) {
-  const formData = new FormData()
-  formData.append('file', file)
+  const ext      = file.name.split('.').pop()
+  const filePath = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
 
-  const res = await fetch('/api/upload', {
-    method: 'POST',
-    body: formData,
-  })
+  const res = await fetch(
+    `${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filePath}`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${ANON_KEY}`,
+        apikey: ANON_KEY,
+        'Content-Type': file.type,
+      },
+      body: file,
+    }
+  )
 
-  const json = await res.json()
-  if (!res.ok) throw new Error(json.error || 'Upload failed')
-  return json.url
+  const json = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(json?.message || json?.error || 'Upload failed')
+
+  return `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${filePath}`
 }
