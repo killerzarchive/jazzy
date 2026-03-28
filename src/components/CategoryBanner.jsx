@@ -7,7 +7,7 @@ const CATEGORIES = [
 
 export default function CategoryBanner({ onNavigate }) {
   return (
-    <section className="pt-10 px-9 pb-4">
+    <section className="pt-10 px-3 sm:px-9 pb-4">
       <h2
         className="mb-4"
         style={{
@@ -20,7 +20,7 @@ export default function CategoryBanner({ onNavigate }) {
       >
         CATEGORIES
       </h2>
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {CATEGORIES.map((cat) => (
           <button
             key={cat.id}
