@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { createProduct, deleteProduct, getOrders } from '../lib/api'
+import { createProduct, updateProduct, deleteProduct, getOrders } from '../lib/api'
 import { uploadProductImage } from '../lib/supabase'
 
 const SHOE_SIZES = ['4','4.5','5','5.5','6','6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','11.5','12','13','14']
@@ -12,13 +12,14 @@ const CATEGORIES = ['footwear', 'bags', 'rugs', 'accessories']
 
 export default function AdminDashboard({ products, onProductsChange }) {
   const [form, setForm]             = useState(EMPTY)
-  const [mediaItems, setMediaItems] = useState([])
+  const [mediaItems, setMediaItems] = useState([])   // { file|null, preview, url|null }
   const [selectedSizes, setSelectedSizes] = useState([])
   const [uploading, setUploading]   = useState(false)
   const [saving, setSaving]         = useState(false)
   const [error, setError]           = useState('')
   const [success, setSuccess]       = useState('')
   const [tab, setTab]               = useState('add')
+  const [editingId, setEditingId]   = useState(null)  // null = create mode
   const [deleteConfirm, setDeleteConfirm] = useState(null)
   const [orders, setOrders]         = useState([])
   const [ordersLoading, setOrdersLoading] = useState(false)
@@ -64,6 +65,35 @@ export default function AdminDashboard({ products, onProductsChange }) {
     )
   }
 
+  function startEdit(p) {
+    setEditingId(p.id)
+    setForm({
+      name:          p.name,
+      price:         String(p.price),
+      originalPrice: p.originalPrice ? String(p.originalPrice) : '',
+      category:      p.category,
+      featured:      p.featured,
+      stock:         String(p.stock ?? ''),
+    })
+    // existing images as non-file previews
+    const existingImages = p.images?.length ? p.images : (p.image ? [p.image] : [])
+    setMediaItems(existingImages.map((url) => ({ file: null, preview: url, url })))
+    setSelectedSizes(p.sizes || [])
+    setError('')
+    setSuccess('')
+    setTab('add')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  function cancelEdit() {
+    setEditingId(null)
+    setForm(EMPTY)
+    setMediaItems([])
+    setSelectedSizes([])
+    setError('')
+    setSuccess('')
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
     if (mediaItems.length === 0) { setError('Upload at least one image.'); return }
@@ -73,13 +103,16 @@ export default function AdminDashboard({ products, onProductsChange }) {
     setSuccess('')
 
     try {
+      // Upload only new files; keep existing URLs as-is
       setUploading(true)
       const urls = await Promise.all(
-        mediaItems.map((item) => uploadProductImage(item.file))
+        mediaItems.map((item) =>
+          item.file ? uploadProductImage(item.file) : Promise.resolve(item.url)
+        )
       )
       setUploading(false)
 
-      await createProduct({
+      const payload = {
         name:          form.name.trim(),
         price:         parseFloat(form.price),
         originalPrice: form.originalPrice ? parseFloat(form.originalPrice) : null,
@@ -89,9 +122,17 @@ export default function AdminDashboard({ products, onProductsChange }) {
         category:      form.category,
         featured:      form.featured,
         stock:         parseInt(form.stock) || 0,
-      })
+      }
 
-      setSuccess('Product added successfully.')
+      if (editingId) {
+        await updateProduct(editingId, payload)
+        setSuccess('Product updated.')
+        setEditingId(null)
+      } else {
+        await createProduct(payload)
+        setSuccess('Product added successfully.')
+      }
+
       setForm(EMPTY)
       setMediaItems([])
       setSelectedSizes([])
@@ -129,10 +170,10 @@ export default function AdminDashboard({ products, onProductsChange }) {
 
       {/* Tabs */}
       <div className="flex mb-8 overflow-x-auto" style={{ borderBottom: '1px solid #f0f0f0' }}>
-        {[['add', 'New Listing'], ['listings', `Products (${products.length})`], ['orders', `Orders (${orders.length})`]].map(([id, label]) => (
+        {[['add', editingId ? 'Edit Product' : 'New Listing'], ['listings', `Products (${products.length})`], ['orders', `Orders (${orders.length})`]].map(([id, label]) => (
           <button
             key={id}
-            onClick={() => setTab(id)}
+            onClick={() => { setTab(id); if (id !== 'add') cancelEdit() }}
             className="mr-7 pb-3 text-[11px] tracking-[0.2em] uppercase font-bold transition-all whitespace-nowrap flex-shrink-0"
             style={{
               color: tab === id ? '#000' : '#bbb',
@@ -145,9 +186,19 @@ export default function AdminDashboard({ products, onProductsChange }) {
         ))}
       </div>
 
-      {/* ── ADD PRODUCT ── */}
+      {/* ── ADD / EDIT PRODUCT ── */}
       {tab === 'add' && (
         <form onSubmit={handleSubmit} className="flex flex-col gap-7">
+
+          {/* Edit mode banner */}
+          {editingId && (
+            <div className="flex items-center justify-between bg-black/[0.03] border border-black/[0.07] rounded-xl px-4 py-3">
+              <p className="text-[11px] font-semibold text-black/60">Editing product #{editingId}</p>
+              <button type="button" onClick={cancelEdit} className="text-[10px] tracking-wider uppercase font-bold text-black/40 hover:text-black transition-colors">
+                Cancel
+              </button>
+            </div>
+          )}
 
           {/* Media upload */}
           <div className="flex flex-col gap-3">
@@ -156,7 +207,6 @@ export default function AdminDashboard({ products, onProductsChange }) {
             </p>
 
             <div className="flex gap-2 flex-wrap">
-              {/* Existing thumbnails */}
               {mediaItems.map((item, i) => (
                 <div key={i} className="relative w-24 h-24 rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0 group">
                   <img src={item.preview} alt="" className="w-full h-full object-cover" />
@@ -179,7 +229,6 @@ export default function AdminDashboard({ products, onProductsChange }) {
                 </div>
               ))}
 
-              {/* Drop zone */}
               <div
                 onClick={() => fileRef.current?.click()}
                 onDrop={handleDrop}
@@ -199,17 +248,9 @@ export default function AdminDashboard({ products, onProductsChange }) {
               </div>
             </div>
 
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              onChange={(e) => handleFiles(e.target.files)}
-            />
+            <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
           </div>
 
-          {/* Two-col row: name full width, then price + original side by side */}
           <Field label="Product name" name="name" value={form.name} onChange={handleChange} required />
 
           <div className="grid grid-cols-2 gap-4 gap-y-6">
@@ -218,7 +259,6 @@ export default function AdminDashboard({ products, onProductsChange }) {
           </div>
 
           <div className="grid grid-cols-2 gap-4 gap-y-6">
-            {/* Category */}
             <div className="flex flex-col gap-2">
               <label className="text-[9px] tracking-[0.35em] uppercase text-black/30 font-semibold">Category</label>
               <select
@@ -228,11 +268,9 @@ export default function AdminDashboard({ products, onProductsChange }) {
                 {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
-
             <Field label="Stock qty" name="stock" value={form.stock} onChange={handleChange} type="number" />
           </div>
 
-          {/* Sizes */}
           {sizeOptions.length > 0 && (
             <div className="flex flex-col gap-3">
               <p className="text-[9px] tracking-[0.35em] uppercase text-black/30 font-semibold">
@@ -241,9 +279,7 @@ export default function AdminDashboard({ products, onProductsChange }) {
               <div className="flex flex-wrap gap-1.5">
                 {sizeOptions.map((size) => (
                   <button
-                    key={size}
-                    type="button"
-                    onClick={() => toggleSize(size)}
+                    key={size} type="button" onClick={() => toggleSize(size)}
                     className="h-9 px-3.5 text-[11px] font-semibold rounded-xl border transition-all active:scale-95"
                     style={selectedSizes.includes(size)
                       ? { background: '#000', color: '#fff', borderColor: '#000' }
@@ -256,7 +292,6 @@ export default function AdminDashboard({ products, onProductsChange }) {
             </div>
           )}
 
-          {/* Featured toggle */}
           <div
             onClick={() => setForm((f) => ({ ...f, featured: !f.featured }))}
             className="flex items-center justify-between py-3 cursor-pointer select-none"
@@ -271,7 +306,7 @@ export default function AdminDashboard({ products, onProductsChange }) {
             </div>
           </div>
 
-          {error   && (
+          {error && (
             <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
               <svg className="w-3.5 h-3.5 text-red-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -289,11 +324,10 @@ export default function AdminDashboard({ products, onProductsChange }) {
           )}
 
           <button
-            type="submit"
-            disabled={isBusy}
+            type="submit" disabled={isBusy}
             className="w-full bg-black text-white py-[18px] text-[10px] tracking-[0.3em] uppercase font-bold active:scale-[0.99] transition-all rounded-2xl disabled:opacity-30"
           >
-            {uploading ? 'Uploading…' : saving ? 'Saving…' : 'Publish Listing'}
+            {uploading ? 'Uploading…' : saving ? 'Saving…' : editingId ? 'Update Product' : 'Publish Listing'}
           </button>
         </form>
       )}
@@ -304,22 +338,15 @@ export default function AdminDashboard({ products, onProductsChange }) {
           {products.length === 0 ? (
             <div className="py-20 text-center">
               <p className="text-[11px] text-black/20 tracking-[0.3em] uppercase font-semibold">No listings yet</p>
-              <p className="text-[11px] text-black/15 mt-1">Add your first product above</p>
             </div>
           ) : (
             <div className="flex flex-col">
-              {products.map((p, i) => (
-                <div
-                  key={p.id}
-                  className="flex items-center gap-4 py-4 group"
-                  style={{ borderBottom: '1px solid #f5f5f5' }}
-                >
-                  {/* Image */}
+              {products.map((p) => (
+                <div key={p.id} className="flex items-center gap-4 py-4 group" style={{ borderBottom: '1px solid #f5f5f5' }}>
                   <div className="w-16 h-16 rounded-2xl bg-gray-50 overflow-hidden flex-shrink-0">
                     <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
                   </div>
 
-                  {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
                       <p className="text-[13px] font-semibold text-black truncate">{p.name}</p>
@@ -342,32 +369,38 @@ export default function AdminDashboard({ products, onProductsChange }) {
                     )}
                   </div>
 
-                  {/* Delete */}
-                  {deleteConfirm === p.id ? (
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <button
-                        onClick={() => handleDelete(p.id)}
-                        className="text-[10px] tracking-wider uppercase font-bold text-white bg-black px-3 py-2 rounded-xl active:scale-95 transition-all"
-                      >
-                        Delete
-                      </button>
-                      <button
-                        onClick={() => setDeleteConfirm(null)}
-                        className="text-[10px] tracking-wider uppercase font-bold text-black/40 active:text-black transition-colors px-2 py-2"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    {/* Edit */}
                     <button
-                      onClick={() => setDeleteConfirm(p.id)}
-                      className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-black/25 active:text-black active:bg-black/[0.06] transition-all"
+                      onClick={() => startEdit(p)}
+                      className="w-9 h-9 rounded-full flex items-center justify-center text-black/25 active:text-black active:bg-black/[0.06] transition-all"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
                     </button>
-                  )}
+
+                    {/* Delete */}
+                    {deleteConfirm === p.id ? (
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => handleDelete(p.id)} className="text-[10px] tracking-wider uppercase font-bold text-white bg-black px-3 py-2 rounded-xl active:scale-95 transition-all">
+                          Delete
+                        </button>
+                        <button onClick={() => setDeleteConfirm(null)} className="text-[10px] tracking-wider uppercase font-bold text-black/40 active:text-black transition-colors px-2 py-2">
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setDeleteConfirm(p.id)}
+                        className="w-9 h-9 rounded-full flex items-center justify-center text-black/25 active:text-black active:bg-black/[0.06] transition-all"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -389,28 +422,17 @@ export default function AdminDashboard({ products, onProductsChange }) {
           ) : (
             <div className="flex flex-col gap-4">
               {orders.map((order) => (
-                <div
-                  key={order.id}
-                  className="rounded-2xl p-4"
-                  style={{ border: '1px solid #f0f0f0' }}
-                >
-                  {/* Order header */}
+                <div key={order.id} className="rounded-2xl p-4" style={{ border: '1px solid #f0f0f0' }}>
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div>
-                      <p className="text-[13px] font-semibold text-black">
-                        {order.firstName} {order.lastName}
-                      </p>
+                      <p className="text-[13px] font-semibold text-black">{order.firstName} {order.lastName}</p>
                       <p className="text-[11px] text-black/40 mt-0.5">{order.email}</p>
                     </div>
                     <div className="text-right flex-shrink-0">
                       <p className="text-[13px] font-bold text-black">${order.total.toFixed(2)}</p>
-                      <span className="inline-block mt-1 text-[8px] tracking-widest uppercase font-bold px-2 py-0.5 rounded-full bg-black/5 text-black/40">
-                        {order.status}
-                      </span>
+                      <span className="inline-block mt-1 text-[8px] tracking-widest uppercase font-bold px-2 py-0.5 rounded-full bg-black/5 text-black/40">{order.status}</span>
                     </div>
                   </div>
-
-                  {/* Items */}
                   <div className="flex flex-col gap-1.5 mb-3" style={{ borderTop: '1px solid #f8f8f8', paddingTop: '10px' }}>
                     {order.items.map((item) => (
                       <div key={item.id} className="flex justify-between">
@@ -419,19 +441,13 @@ export default function AdminDashboard({ products, onProductsChange }) {
                       </div>
                     ))}
                   </div>
-
-                  {/* Shipping address */}
                   <div className="flex items-start gap-2" style={{ borderTop: '1px solid #f8f8f8', paddingTop: '10px' }}>
                     <svg className="w-3 h-3 text-black/20 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    <p className="text-[11px] text-black/35 leading-relaxed">
-                      {order.address}, {order.city}, {order.state} {order.zip} · {order.country}
-                    </p>
+                    <p className="text-[11px] text-black/35 leading-relaxed">{order.address}, {order.city}, {order.state} {order.zip} · {order.country}</p>
                   </div>
-
-                  {/* Footer: date + Stripe ID */}
                   <div className="flex items-center justify-between mt-3" style={{ borderTop: '1px solid #f8f8f8', paddingTop: '10px' }}>
                     <p className="text-[10px] text-black/25 font-medium">
                       {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
