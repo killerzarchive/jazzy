@@ -243,7 +243,7 @@ export default function App() {
           ) : currentProduct ? (
             <ProductPage product={currentProduct} onAddToCart={handleAddToCart} />
           ) : currentSection ? (
-            <div className="pt-7 p-8 pb-12">
+            <div className="pt-7 p-4 sm:p-8 pb-12">
               <p className="text-[9px] tracking-[0.35em] uppercase text-black/30 font-bold mb-5 capitalize">
                 {currentSection}
               </p>
