@@ -247,7 +247,7 @@ export default function App() {
               <p className="text-[9px] tracking-[0.35em] uppercase text-black/30 font-bold mb-5 capitalize">
                 {currentSection}
               </p>
-              <div className="grid grid-cols-5 gap-x-3 gap-y-6">
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-x-3 gap-y-6">
                 {sectionProducts.map((p) => (
                   <ProductCard
                     key={p.id}

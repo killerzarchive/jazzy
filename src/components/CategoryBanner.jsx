@@ -20,7 +20,7 @@ export default function CategoryBanner({ onNavigate }) {
       >
         CATEGORIES
       </h2>
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
         {CATEGORIES.map((cat) => (
           <button
             key={cat.id}
