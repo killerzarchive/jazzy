@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'LilGrotesk';
+  src: url('/fonts/lilgrotesk-regular/LilGrotesk-Regular.woff2') format('woff2'),
+       url('/fonts/lilgrotesk-regular/LilGrotesk-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LilGrotesk';
+  src: url('/fonts/lilgrotesk-bold/LilGrotesk-Bold.woff2') format('woff2'),
+       url('/fonts/lilgrotesk-bold/LilGrotesk-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
+  body {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    background: #ffffff;
+    color: #111111;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}

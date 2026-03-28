@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  name         String   @default("")
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("users")
+}
+
+model Product {
+  id            Int     @id @default(autoincrement())
+  name          String
+  price         Float
+  originalPrice Float?  @map("original_price")
+  imageUrl      String  @map("image_url")
+  mediaUrls     String? @map("media_urls")
+  sizes         String?
+  category      String
+  featured      Boolean @default(false)
+  stock         Int     @default(0)
+
+  @@map("products")
+}
+
+model Order {
+  id               Int         @id @default(autoincrement())
+  stripeCustomerId String?     @map("stripe_customer_id")
+  stripePaymentId  String?     @map("stripe_payment_id")
+  email            String
+  firstName        String      @map("first_name")
+  lastName         String      @map("last_name")
+  address          String
+  city             String
+  state            String
+  zip              String
+  country          String
+  subtotal         Float
+  shipping         Float
+  total            Float
+  status           String      @default("paid")
+  createdAt        DateTime    @default(now()) @map("created_at")
+  items            OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        Int    @id @default(autoincrement())
+  orderId   Int    @map("order_id")
+  productId Int    @map("product_id")
+  name      String
+  price     Float
+  qty       Int
+  order     Order  @relation(fields: [orderId], references: [id])
+
+  @@map("order_items")
+}

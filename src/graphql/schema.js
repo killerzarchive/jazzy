@@ -1,0 +1,106 @@
+export const typeDefs = /* GraphQL */ `
+  type Query {
+    products(category: String): [Product!]!
+    product(id: Int!): Product
+    orders: [Order!]!
+  }
+
+  type Mutation {
+    signIn(email: String!, password: String!): AuthPayload!
+    signUp(email: String!, password: String!, name: String): AuthPayload!
+
+    createProduct(input: ProductInput!): Product!
+    updateProduct(id: Int!, input: ProductInput!): Product!
+    deleteProduct(id: Int!): Boolean!
+
+    createOrder(input: OrderInput!): Order!
+  }
+
+  input ProductInput {
+    name:          String!
+    price:         Float!
+    originalPrice: Float
+    imageUrl:      String!
+    images:        [String!]
+    sizes:         [String!]
+    category:      String!
+    featured:      Boolean
+    stock:         Int
+  }
+
+  input OrderInput {
+    email:           String!
+    firstName:       String!
+    lastName:        String!
+    address:         String!
+    city:            String!
+    state:           String!
+    zip:             String!
+    country:         String!
+    subtotal:        Float!
+    shipping:        Float!
+    total:           Float!
+    stripeCustomerId: String
+    stripePaymentId:  String
+    items:           [OrderItemInput!]!
+  }
+
+  input OrderItemInput {
+    productId: Int!
+    name:      String!
+    price:     Float!
+    qty:       Int!
+  }
+
+  type Product {
+    id:            Int!
+    name:          String!
+    price:         Float!
+    originalPrice: Float
+    image:         String!
+    images:        [String!]!
+    sizes:         [String!]!
+    category:      String!
+    featured:      Boolean!
+    stock:         Int!
+  }
+
+  type Order {
+    id:               Int!
+    email:            String!
+    firstName:        String!
+    lastName:         String!
+    address:          String!
+    city:             String!
+    state:            String!
+    zip:              String!
+    country:          String!
+    subtotal:         Float!
+    shipping:         Float!
+    total:            Float!
+    status:           String!
+    stripeCustomerId: String
+    stripePaymentId:  String
+    createdAt:        String!
+    items:            [OrderItem!]!
+  }
+
+  type OrderItem {
+    id:        Int!
+    productId: Int!
+    name:      String!
+    price:     Float!
+    qty:       Int!
+  }
+
+  type User {
+    id:    Int!
+    email: String!
+    name:  String!
+  }
+
+  type AuthPayload {
+    token: String!
+    user:  User!
+  }
+`
