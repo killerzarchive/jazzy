@@ -13,6 +13,7 @@ import Checkout from "./components/Checkout";
 import Search from "./components/Search";
 import AnnouncementBar from "./components/AnnouncementBar";
 import CategoryBanner from "./components/CategoryBanner";
+import VendorBanner from "./components/VendorBanner";
 import AdminDashboard from "./components/AdminDashboard";
 import VendorPage from "./components/VendorPage";
 import { getProducts } from "./lib/api";
@@ -274,6 +275,7 @@ export default function App() {
                 <Hero onShopAll={() => setCurrentSection("all")} />
               </div>
               <CategoryBanner onNavigate={navigate} />
+              <VendorBanner onNavigate={navigate} />
             </>
           )}
         </div>
