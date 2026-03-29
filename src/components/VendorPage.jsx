@@ -110,7 +110,7 @@ function VendorForm() {
         </div>
         <p className="text-[10px] tracking-[0.35em] uppercase text-black/30 font-semibold mb-2">Payment Confirmed</p>
         <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.2rem', letterSpacing: '0.05em', lineHeight: 1 }} className="mb-4">
-          You're a vendor!
+          Your vendor PDF has been sent!
         </h2>
         <p className="text-[13px] text-black/50 leading-relaxed max-w-xs">
           Your vendor guide has been sent to <span className="text-black font-semibold">{form.email}</span>. Check your inbox.
