@@ -117,6 +117,13 @@ function CheckoutForm({ cartItems, products, onBack, onSuccess }) {
       if (paymentIntent.status !== 'succeeded') throw new Error('Payment was not completed.')
 
       // 3. Save order to database
+      const orderItems = enriched.map((i) => ({
+        productId: i.product.id,
+        name: i.product.name,
+        price: i.product.price,
+        qty: i.qty,
+      }))
+
       await createOrder({
         email: form.email,
         firstName: form.firstName,
@@ -131,12 +138,28 @@ function CheckoutForm({ cartItems, products, onBack, onSuccess }) {
         total,
         stripeCustomerId: customerId,
         stripePaymentId: paymentIntent.id,
-        items: enriched.map((i) => ({
-          productId: i.product.id,
-          name: i.product.name,
-          price: i.product.price,
-          qty: i.qty,
-        })),
+        items: orderItems,
+      })
+
+      // 4. Send confirmation email
+      await fetch('/api/orders/send-confirmation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: form.email,
+          firstName: form.firstName,
+          lastName: form.lastName,
+          address: form.address,
+          city: form.city,
+          state: form.state,
+          zip: form.zip,
+          country: form.country,
+          items: orderItems,
+          subtotal,
+          shipping,
+          total,
+          stripePaymentId: paymentIntent.id,
+        }),
       })
 
       setPlaced(true)
