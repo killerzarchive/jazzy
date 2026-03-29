@@ -75,7 +75,7 @@ export default function Header({ onMenuOpen, cartCount, currentPage, onBack, onS
       {!currentPage && (
         <>
           <div  />
-          <nav className="flex items-center gap-7 px-5 py-3 pb-5 overflow-x-auto scrollbar-none" style={{ scrollbarWidth: 'none' }}>
+          <nav className="flex items-center gap-7 px-5 py-3 pb-5 overflow-x-auto scrollbar-none md:justify-center" style={{ scrollbarWidth: 'none' }}>
             {navLinks.map((link) => {
               const isActive = activePage === link.id
               return (
