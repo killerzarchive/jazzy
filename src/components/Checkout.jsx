@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, CardNumberElement, CardExpiryElement, CardCvcElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { createOrder } from '../lib/api'
@@ -29,6 +29,17 @@ function CheckoutForm({ cartItems, products, onBack, onSuccess }) {
   const stripe = useStripe()
   const elements = useElements()
 
+  const [shippingFee, setShippingFee] = useState(20)
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((r) => r.json())
+      .then(({ settings }) => {
+        if (settings?.shipping_fee) setShippingFee(parseFloat(settings.shipping_fee))
+      })
+      .catch(() => {})
+  }, [])
+
   const enriched = cartItems
     .map((item) => {
       const product = products.find((p) => p.id === item.productId)
@@ -38,7 +49,7 @@ function CheckoutForm({ cartItems, products, onBack, onSuccess }) {
     .filter(Boolean)
 
   const subtotal = enriched.reduce((sum, i) => sum + i.product.price * i.qty, 0)
-  const shipping = subtotal > 0 ? 8.99 : 0
+  const shipping = subtotal > 0 ? shippingFee : 0
   const total = subtotal + shipping
 
   const [form, setForm] = useState({

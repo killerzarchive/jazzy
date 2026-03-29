@@ -23,10 +23,14 @@ export default function AdminDashboard({ products, onProductsChange }) {
   const [deleteConfirm, setDeleteConfirm] = useState(null)
   const [orders, setOrders]         = useState([])
   const [ordersLoading, setOrdersLoading] = useState(false)
-  const [vendorFee, setVendorFee]   = useState('')
-  const [feeLoading, setFeeLoading] = useState(false)
-  const [feeSaved, setFeeSaved]     = useState(false)
-  const [feeError, setFeeError]     = useState('')
+  const [vendorFee, setVendorFee]       = useState('')
+  const [feeLoading, setFeeLoading]     = useState(false)
+  const [feeSaved, setFeeSaved]         = useState(false)
+  const [feeError, setFeeError]         = useState('')
+  const [shippingFee, setShippingFee]   = useState('')
+  const [shipLoading, setShipLoading]   = useState(false)
+  const [shipSaved, setShipSaved]       = useState(false)
+  const [shipError, setShipError]       = useState('')
   const fileRef                     = useRef(null)
 
   useEffect(() => {
@@ -37,7 +41,10 @@ export default function AdminDashboard({ products, onProductsChange }) {
     if (tab === 'settings') {
       fetch('/api/settings')
         .then((r) => r.json())
-        .then(({ settings }) => { if (settings?.vendor_fee) setVendorFee(settings.vendor_fee) })
+        .then(({ settings }) => {
+          if (settings?.vendor_fee) setVendorFee(settings.vendor_fee)
+          if (settings?.shipping_fee) setShippingFee(settings.shipping_fee)
+        })
         .catch(() => {})
     }
   }, [tab])
@@ -62,6 +69,29 @@ export default function AdminDashboard({ products, onProductsChange }) {
       setFeeError(err.message)
     } finally {
       setFeeLoading(false)
+    }
+  }
+
+  async function saveShippingFee(e) {
+    e.preventDefault()
+    setShipLoading(true)
+    setShipError('')
+    setShipSaved(false)
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ key: 'shipping_fee', value: shippingFee }),
+      })
+      const data = await res.json()
+      if (data.error) throw new Error(data.error)
+      setShipSaved(true)
+      setTimeout(() => setShipSaved(false), 3000)
+    } catch (err) {
+      setShipError(err.message)
+    } finally {
+      setShipLoading(false)
     }
   }
 
@@ -485,6 +515,54 @@ export default function AdminDashboard({ products, onProductsChange }) {
               className="w-full bg-black text-white py-[18px] text-[10px] tracking-[0.3em] uppercase font-bold active:scale-[0.99] transition-all rounded-2xl disabled:opacity-30"
             >
               {feeLoading ? 'Saving…' : 'Save Fee'}
+            </button>
+          </form>
+
+          <div style={{ height: 1, background: '#f0f0f0' }} />
+
+          <form onSubmit={saveShippingFee} className="flex flex-col gap-6">
+            <div>
+              <p className="text-[9px] tracking-[0.4em] uppercase text-black/25 font-semibold mb-1">Checkout</p>
+              <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.5rem', letterSpacing: '0.05em', lineHeight: 1 }}>
+                Shipping Fee
+              </h2>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-[9px] tracking-[0.35em] uppercase text-black/30 font-semibold">Base shipping ($)</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={shippingFee}
+                onChange={(e) => { setShippingFee(e.target.value); setShipSaved(false); setShipError('') }}
+                placeholder="20.00"
+                required
+                className="border-b border-gray-200 focus:border-black outline-none py-2.5 text-sm text-gray-900 bg-transparent transition-colors font-medium"
+              />
+              <p className="text-[10px] text-black/30">Applied to every order at checkout.</p>
+            </div>
+
+            {shipError && (
+              <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
+                <p className="text-[11px] text-red-500 font-medium">{shipError}</p>
+              </div>
+            )}
+            {shipSaved && (
+              <div className="flex items-center gap-2 bg-black/[0.03] border border-black/[0.06] rounded-xl px-4 py-3">
+                <svg className="w-3.5 h-3.5 text-black/40 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <p className="text-[11px] text-black/50 font-medium">Shipping fee updated.</p>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={shipLoading}
+              className="w-full bg-black text-white py-[18px] text-[10px] tracking-[0.3em] uppercase font-bold active:scale-[0.99] transition-all rounded-2xl disabled:opacity-30"
+            >
+              {shipLoading ? 'Saving…' : 'Save Shipping Fee'}
             </button>
           </form>
         </div>
