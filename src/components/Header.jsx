@@ -52,7 +52,7 @@ export default function Header({ onMenuOpen, cartCount, currentPage, onBack, onS
         </button>
 
         {/* Right icons */}
-        <div className="flex items-center gap-5">
+        <div className="flex items-center pb-5 sm:pb-3 gap-5">
           <button onClick={onSignIn} aria-label="Account" className="text-black/60 hover:text-black transition-colors">
             <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
