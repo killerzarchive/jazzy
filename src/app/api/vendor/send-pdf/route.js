@@ -14,21 +14,21 @@ export async function POST(req) {
     await resend.emails.send({
       from: process.env.EMAIL_FROM || 'Jazzy\'s Drop Shop <noreply@jazzysdrops.com>',
       to: email,
-      subject: 'Welcome to Jazzy\'s Drop Shop — Your Vendor Guide',
+      subject: 'Your Vendor Shopping Link — Jazzy\'s Drop Shop',
       html: `
         <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; color: #111;">
           <h1 style="font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px;">
-            Welcome, ${name || 'Vendor'}!
+            Hey ${name || 'there'}!
           </h1>
           <p style="color: #555; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
-            Thank you for joining Jazzy's Drop Shop as a vendor. Your payment was successful.
-            Your vendor guide is ready — click the button below to download it.
+            Thank you for your purchase! You now have access to our exclusive vendor list.
+            Click the link below to browse and shop directly with our vendors.
           </p>
           <a
             href="${pdfUrl}"
             style="display: inline-block; background: #000; color: #fff; padding: 14px 28px; border-radius: 12px; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-decoration: none;"
           >
-            Download Vendor Guide
+            Shop With Vendors
           </a>
           <p style="color: #aaa; font-size: 12px; margin-top: 32px;">
             If the button doesn't work, copy and paste this link:<br/>
