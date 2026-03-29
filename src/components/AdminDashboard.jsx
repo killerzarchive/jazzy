@@ -23,6 +23,10 @@ export default function AdminDashboard({ products, onProductsChange }) {
   const [deleteConfirm, setDeleteConfirm] = useState(null)
   const [orders, setOrders]         = useState([])
   const [ordersLoading, setOrdersLoading] = useState(false)
+  const [vendorFee, setVendorFee]   = useState('')
+  const [feeLoading, setFeeLoading] = useState(false)
+  const [feeSaved, setFeeSaved]     = useState(false)
+  const [feeError, setFeeError]     = useState('')
   const fileRef                     = useRef(null)
 
   useEffect(() => {
@@ -30,7 +34,36 @@ export default function AdminDashboard({ products, onProductsChange }) {
       setOrdersLoading(true)
       getOrders().then(setOrders).catch(() => {}).finally(() => setOrdersLoading(false))
     }
+    if (tab === 'settings') {
+      fetch('/api/settings')
+        .then((r) => r.json())
+        .then(({ settings }) => { if (settings?.vendor_fee) setVendorFee(settings.vendor_fee) })
+        .catch(() => {})
+    }
   }, [tab])
+
+  async function saveVendorFee(e) {
+    e.preventDefault()
+    setFeeLoading(true)
+    setFeeError('')
+    setFeeSaved(false)
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ key: 'vendor_fee', value: vendorFee }),
+      })
+      const data = await res.json()
+      if (data.error) throw new Error(data.error)
+      setFeeSaved(true)
+      setTimeout(() => setFeeSaved(false), 3000)
+    } catch (err) {
+      setFeeError(err.message)
+    } finally {
+      setFeeLoading(false)
+    }
+  }
 
   const sizeOptions = form.category === 'footwear' ? SHOE_SIZES : []
 
@@ -170,7 +203,7 @@ export default function AdminDashboard({ products, onProductsChange }) {
 
       {/* Tabs */}
       <div className="flex mb-8 overflow-x-auto" style={{ borderBottom: '1px solid #f0f0f0' }}>
-        {[['add', editingId ? 'Edit Product' : 'New Listing'], ['listings', `Products (${products.length})`], ['orders', `Orders (${orders.length})`]].map(([id, label]) => (
+        {[['add', editingId ? 'Edit Product' : 'New Listing'], ['listings', `Products (${products.length})`], ['orders', `Orders (${orders.length})`], ['settings', 'Settings']].map(([id, label]) => (
           <button
             key={id}
             onClick={() => { setTab(id); if (id !== 'add') cancelEdit() }}
@@ -403,6 +436,57 @@ export default function AdminDashboard({ products, onProductsChange }) {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── SETTINGS ── */}
+      {tab === 'settings' && (
+        <div className="flex flex-col gap-8">
+          <form onSubmit={saveVendorFee} className="flex flex-col gap-6">
+            <div>
+              <p className="text-[9px] tracking-[0.4em] uppercase text-black/25 font-semibold mb-1">Vendor Onboarding</p>
+              <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.5rem', letterSpacing: '0.05em', lineHeight: 1 }}>
+                Vendor Fee
+              </h2>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-[9px] tracking-[0.35em] uppercase text-black/30 font-semibold">One-time fee ($)</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={vendorFee}
+                onChange={(e) => { setVendorFee(e.target.value); setFeeSaved(false); setFeeError('') }}
+                placeholder="49.99"
+                required
+                className="border-b border-gray-200 focus:border-black outline-none py-2.5 text-sm text-gray-900 bg-transparent transition-colors font-medium"
+              />
+              <p className="text-[10px] text-black/30">This is the amount charged to users on the Vendor page.</p>
+            </div>
+
+            {feeError && (
+              <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
+                <p className="text-[11px] text-red-500 font-medium">{feeError}</p>
+              </div>
+            )}
+            {feeSaved && (
+              <div className="flex items-center gap-2 bg-black/[0.03] border border-black/[0.06] rounded-xl px-4 py-3">
+                <svg className="w-3.5 h-3.5 text-black/40 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <p className="text-[11px] text-black/50 font-medium">Vendor fee updated.</p>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={feeLoading}
+              className="w-full bg-black text-white py-[18px] text-[10px] tracking-[0.3em] uppercase font-bold active:scale-[0.99] transition-all rounded-2xl disabled:opacity-30"
+            >
+              {feeLoading ? 'Saving…' : 'Save Fee'}
+            </button>
+          </form>
         </div>
       )}
 

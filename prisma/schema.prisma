@@ -54,6 +54,13 @@ model Order {
   @@map("orders")
 }
 
+model Setting {
+  key   String @id
+  value String
+
+  @@map("settings")
+}
+
 model OrderItem {
   id        Int    @id @default(autoincrement())
   orderId   Int    @map("order_id")

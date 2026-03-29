@@ -41,6 +41,16 @@ function VendorForm() {
   const [error, setError] = useState('')
   const [done, setDone] = useState(false)
   const [amount, setAmount] = useState(null)
+  const [displayFee, setDisplayFee] = useState(parseFloat(process.env.NEXT_PUBLIC_VENDOR_FEE || '49.99'))
+
+  useState(() => {
+    fetch('/api/settings')
+      .then((r) => r.json())
+      .then(({ settings }) => {
+        if (settings?.vendor_fee) setDisplayFee(parseFloat(settings.vendor_fee))
+      })
+      .catch(() => {})
+  })
 
   function handleChange(e) {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
@@ -144,7 +154,7 @@ function VendorForm() {
           <div className="rounded-2xl p-5 bg-black text-white">
             <p className="text-[9px] tracking-[0.35em] uppercase text-white/40 font-semibold mb-1">One-time fee</p>
             <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '3rem', letterSpacing: '0.03em', lineHeight: 1 }}>
-              ${parseFloat(process.env.NEXT_PUBLIC_VENDOR_FEE || '49.99').toFixed(2)}
+              ${displayFee.toFixed(2)}
             </p>
             <p className="text-[11px] text-white/40 mt-1">Instant access after payment</p>
           </div>
@@ -196,7 +206,7 @@ function VendorForm() {
             disabled={loading || !stripe}
             className="w-full bg-black text-white py-[18px] text-[10px] tracking-[0.3em] uppercase font-bold active:scale-[0.99] transition-all rounded-2xl disabled:opacity-30"
           >
-            {loading ? 'Processing…' : `Pay $${parseFloat(process.env.NEXT_PUBLIC_VENDOR_FEE || '49.99').toFixed(2)} — Get Access`}
+            {loading ? 'Processing…' : `Pay $${displayFee.toFixed(2)} — Get Access`}
           </button>
 
           <p className="text-[10px] text-black/25 text-center leading-relaxed">

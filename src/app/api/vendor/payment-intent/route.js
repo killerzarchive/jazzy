@@ -1,4 +1,7 @@
 import Stripe from 'stripe'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 export async function POST(req) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
@@ -6,7 +9,8 @@ export async function POST(req) {
   try {
     const { email, name } = await req.json()
 
-    const amount = parseFloat(process.env.VENDOR_FEE || '49.99')
+    const setting = await prisma.setting.findUnique({ where: { key: 'vendor_fee' } })
+    const amount = parseFloat(setting?.value || process.env.VENDOR_FEE || '49.99')
 
     const existing = await stripe.customers.list({ email: email.toLowerCase(), limit: 1 })
     let customer
