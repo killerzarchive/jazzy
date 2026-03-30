@@ -8,7 +8,7 @@ const EMPTY = {
   name: '', price: '', originalPrice: '',
   category: 'footwear', featured: false, stock: '',
 }
-const CATEGORIES = ['footwear', 'bags', 'rugs', 'accessories']
+const CATEGORIES = ['footwear', 'bags', 'rugs', 'accessories', 'clothing', 'wallets', 'belts']
 
 export default function AdminDashboard({ products, onProductsChange }) {
   const [form, setForm]             = useState(EMPTY)
