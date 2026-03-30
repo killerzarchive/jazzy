@@ -83,8 +83,8 @@ export default function Contact() {
         <p className="text-[11px] tracking-[0.25em] uppercase text-gray-400 mb-2">Find us</p>
         {[
           { label: 'Instagram', handle: '@shopjazzy' },
-          { label: 'Email', handle: 'hello@shopjazzy.com' },
-          { label: 'Website', handle: 'shopjazzy.com' },
+          { label: 'Email', handle: 'jazzy@jazzysmarketplace.com' },
+          { label: 'Website', handle: 'jazzysmarketplace.com' },
         ].map((s) => (
           <div key={s.label} className="flex items-center justify-between py-2 border-b border-gray-50">
             <span className="text-xs text-gray-400 tracking-wide uppercase">{s.label}</span>
