@@ -82,7 +82,7 @@ export default function Contact() {
       <div className="mt-14 pt-8 border-t border-gray-100 flex flex-col gap-3">
         <p className="text-[11px] tracking-[0.25em] uppercase text-gray-400 mb-2">Find us</p>
         {[
-          { label: 'Instagram', handle: '@shopjazzy' },
+          { label: 'Instagram', handle: '@jasmynnaaliyah' },
           { label: 'Email', handle: 'jazzy@jazzysmarketplace.com' },
           { label: 'Website', handle: 'jazzysmarketplace.com' },
         ].map((s) => (
