@@ -300,7 +300,7 @@ export default function AdminDashboard({ products, onProductsChange, categories 
 
       {/* Tabs */}
       <div className="flex mb-8 overflow-x-auto" style={{ borderBottom: '1px solid #f0f0f0' }}>
-        {[['add', editingId ? 'Edit Product' : 'New Listing'], ['listings', `Products (${products.length})`], ['orders', `Orders (${orders.length})`], ['categories', `Categories (${categories.length})`], ['settings', 'Settings']].map(([id, label]) => (
+        {[['add', editingId ? 'Edit Product' : 'New Listing'], ['listings', `Products (${products.length})`], ['orders', `Orders (${orders.length})`], ['categories', `Categories (${categories.length})`], ['inquiries', `Inquiries (${inquiries.length})`], ['settings', 'Settings']].map(([id, label]) => (
           <button
             key={id}
             onClick={() => { setTab(id); if (id !== 'add') cancelEdit() }}
@@ -770,6 +770,60 @@ export default function AdminDashboard({ products, onProductsChange, categories 
                       <p className="text-[9px] text-black/20 font-mono truncate ml-4">{order.stripePaymentId}</p>
                     )}
                   </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── INQUIRIES ── */}
+      {tab === 'inquiries' && (
+        <div>
+          {inquiriesLoading ? (
+            <div className="py-20 text-center">
+              <div className="w-5 h-5 border-2 border-black/10 border-t-black rounded-full animate-spin mx-auto" />
+            </div>
+          ) : inquiries.length === 0 ? (
+            <div className="py-20 text-center">
+              <p className="text-[11px] text-black/20 tracking-[0.3em] uppercase font-semibold">No inquiries yet</p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {inquiries.map((inq) => (
+                <div
+                  key={inq.id}
+                  className="rounded-2xl p-4"
+                  style={{ border: `1px solid ${inq.read ? '#f0f0f0' : '#000'}`, background: inq.read ? '#fff' : '#fafafa' }}
+                >
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <div>
+                      <p className="text-[13px] font-semibold text-black">{inq.name}</p>
+                      <p className="text-[11px] text-black/40 mt-0.5">{inq.email}</p>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {!inq.read && (
+                        <button
+                          onClick={async () => {
+                            await markInquiryRead(inq.id)
+                            setInquiries((prev) => prev.map((i) => i.id === inq.id ? { ...i, read: true } : i))
+                          }}
+                          className="text-[9px] tracking-widest uppercase font-bold px-3 py-1.5 rounded-full bg-black text-white"
+                        >
+                          Mark read
+                        </button>
+                      )}
+                      {inq.read && (
+                        <span className="text-[9px] tracking-widest uppercase font-bold px-2 py-1 rounded-full bg-black/5 text-black/30">Read</span>
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-[12px] text-black/60 leading-relaxed" style={{ borderTop: '1px solid #f0f0f0', paddingTop: '10px' }}>
+                    {inq.message}
+                  </p>
+                  <p className="text-[10px] text-black/25 font-medium mt-3">
+                    {new Date(inq.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </p>
                 </div>
               ))}
             </div>
