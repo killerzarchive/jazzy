@@ -1,6 +1,6 @@
 export default function Hero({ onShopAll }) {
   return (
-    <section className="relative overflow-hidden rounded-2xl sm:rounded-[45px] mx-6 sm:mx-10 bg-black">
+    <section className="relative overflow-hidden px-10 bg-black">
       <img
         src="/jazzy.jpeg"
         alt=""
