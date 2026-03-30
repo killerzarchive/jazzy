@@ -1,16 +1,16 @@
 export default function Hero({ onShopAll }) {
   return (
-    <section className="relative overflow-hidden px-10 bg-black" style={{ height: '80vw', maxHeight: 520 }}>
+    <section className="relative overflow-hidden px-10 bg-black">
       <img
         src="/jazzy.jpeg"
         alt=""
-        className="absolute inset-0 w-full h-full object-cover object-top"
+        className="w-full h-auto block"
         style={{ opacity: 0.5 }}
       />
 
       {/* Gradient layers */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent pointer-events-none" />
 
       {/* Content — bottom left */}
       <div className="absolute bottom-0 left-0 right-0 px-12 pb-10">
@@ -19,7 +19,7 @@ export default function Hero({ onShopAll }) {
         </p>
 
         <h1
-          className="text-white leading-none mb-6"
+          className="text-white text-sm sm:text-md leading-none mb-6"
           style={{
             fontFamily: "'Bebas Neue', sans-serif",
             fontSize: 'clamp(3.2rem, 16vw, 5.8rem)',
