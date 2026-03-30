@@ -1,6 +1,6 @@
 export default function Hero({ onShopAll }) {
   return (
-    <section className="relative border overflow-hidden rounded-2xl sm:rounded-[45px] mx-7 sm:mx-10 bg-black">
+    <section className="relative overflow-hidden rounded-2xl sm:rounded-[45px] mx-7 sm:mx-10 bg-black">
       <img
         src="/jazzy.jpeg"
         alt=""
@@ -12,7 +12,7 @@ export default function Hero({ onShopAll }) {
 
 
       {/* Content — bottom left */}
-      <div className=" bg-white left-0 right-0 px-3 py-2">
+      <div className=" bg-pink-300 left-0 right-0 px-3 py-2">
        
 
         <div className="flex items-center gap-4">
