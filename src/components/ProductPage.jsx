@@ -1,5 +1,11 @@
 import { useState } from 'react'
 
+function dualSize(size) {
+  const m = parseFloat(size)
+  const w = m + 1.5
+  return `${m}M / ${Number.isInteger(w) ? w : w}W`
+}
+
 export default function ProductPage({ product, onAddToCart }) {
   const images = product.images?.length ? product.images : [product.image]
   const sizes  = product.sizes || []
@@ -110,12 +116,12 @@ export default function ProductPage({ product, onAddToCart }) {
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className="h-9 px-3.5 text-[12px] font-semibold rounded-xl border transition-all duration-150 active:scale-95"
+                    className="h-9 px-3.5 text-[11px] font-semibold rounded-xl border transition-all duration-150 active:scale-95 whitespace-nowrap"
                     style={selectedSize === size
                       ? { background: '#000', color: '#fff', borderColor: '#000' }
                       : { background: '#fff', color: '#333', borderColor: '#e0e0e0' }}
                   >
-                    {size}
+                    {dualSize(size)}
                   </button>
                 ))}
               </div>

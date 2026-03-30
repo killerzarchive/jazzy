@@ -4,6 +4,12 @@ import { uploadProductImage } from '../lib/supabase'
 
 const SHOE_SIZES = ['4','4.5','5','5.5','6','6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','11.5','12','13','14']
 
+function dualSize(size) {
+  const m = parseFloat(size)
+  const w = m + 1.5
+  return `${m}M / ${Number.isInteger(w) ? w : w}W`
+}
+
 const EMPTY = {
   name: '', price: '', originalPrice: '',
   category: 'footwear', featured: false, stock: '',
@@ -343,12 +349,12 @@ export default function AdminDashboard({ products, onProductsChange }) {
                 {sizeOptions.map((size) => (
                   <button
                     key={size} type="button" onClick={() => toggleSize(size)}
-                    className="h-9 px-3.5 text-[11px] font-semibold rounded-xl border transition-all active:scale-95"
+                    className="h-9 px-3.5 text-[10px] font-semibold rounded-xl border transition-all active:scale-95 whitespace-nowrap"
                     style={selectedSizes.includes(size)
                       ? { background: '#000', color: '#fff', borderColor: '#000' }
                       : { background: '#fafafa', color: '#aaa', borderColor: '#ebebeb' }}
                   >
-                    {size}
+                    {dualSize(size)}
                   </button>
                 ))}
               </div>
