@@ -13,16 +13,19 @@ export default function Hero({ onShopAll }) {
       <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent pointer-events-none" />
 
       {/* Content — bottom left */}
-      <div className="absolute bottom-0 left-0 right-0 px-12 pb-10">
-        <p className="text-[9px] tracking-[0.45em] uppercase font-semibold mb-3" style={{ color: 'rgba(255,255,255,0.5)' }}>
+      <div className="absolute bottom-0 left-0 right-0 px-[5vw] pb-[4vw]">
+        <p
+          className="uppercase font-semibold mb-[1vw]"
+          style={{ fontSize: 'clamp(7px, 1.8vw, 13px)', letterSpacing: '0.4em', color: 'rgba(255,255,255,0.5)' }}
+        >
           New Drop — Limited Stock
         </p>
 
         <h1
-          className="text-white text-sm sm:text-md leading-none mb-6"
+          className="text-white leading-none mb-[2.5vw]"
           style={{
             fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: 'clamp(3.2rem, 16vw, 5.8rem)',
+            fontSize: 'clamp(2rem, 10vw, 5.8rem)',
             letterSpacing: '0.02em',
             lineHeight: 0.88,
           }}
@@ -33,10 +36,15 @@ export default function Hero({ onShopAll }) {
         <div className="flex items-center gap-4">
           <button
             onClick={onShopAll}
-            className="inline-flex items-center gap-2 bg-white text-black text-[11px] tracking-[0.2em] uppercase font-extrabold px-6 py-5 rounded-full transition-all duration-200 hover:bg-white/90 active:scale-[0.97]"
+            className="inline-flex items-center gap-2 bg-white text-black uppercase font-extrabold rounded-full transition-all duration-200 hover:bg-white/90 active:scale-[0.97]"
+            style={{
+              fontSize: 'clamp(8px, 1.8vw, 13px)',
+              letterSpacing: '0.2em',
+              padding: 'clamp(8px, 1.5vw, 18px) clamp(14px, 3vw, 28px)',
+            }}
           >
             Shop the Drop
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+            <svg style={{ width: 'clamp(8px, 1.2vw, 13px)', height: 'clamp(8px, 1.2vw, 13px)' }} fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
           </button>
