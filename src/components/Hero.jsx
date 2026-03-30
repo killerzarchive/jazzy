@@ -4,7 +4,7 @@ export default function Hero({ onShopAll }) {
       <img
         src="/jazzy.jpeg"
         alt=""
-        className="w-full h-auto block"
+        className="w-full cover h-auto block"
         style={{ }}
       />
 

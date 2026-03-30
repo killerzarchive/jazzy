@@ -28,12 +28,7 @@ export default function CategoryBanner({ onNavigate, categories }) {
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
-            <span
-              className="absolute bottom-3 left-3 text-white font-bold tracking-widest uppercase"
-              style={{ fontSize: 'clamp(9px, 2vw, 13px)' }}
-            >
-              {cat.name}
-            </span>
+          
           </button>
         ))}
       </div>
