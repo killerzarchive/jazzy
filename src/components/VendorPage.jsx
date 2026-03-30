@@ -17,11 +17,11 @@ const CARD_STYLE = {
 }
 
 const PERKS = [
-  'Full vendor onboarding guide (PDF)',
-  'Pricing & sourcing strategy',
-  'Platform setup walkthrough',
-  'Branding & product photography tips',
-  'Direct contact for vendor support',
+  'Exclusive vendor list sent directly to your email',
+  'Direct links to shop with personal high quality vendors',
+  'Access to curated sourcing contacts',
+  'One-time purchase — yours to keep',
+  'Instant delivery after payment',
 ]
 
 export default function VendorPage() {
@@ -110,10 +110,10 @@ function VendorForm() {
         </div>
         <p className="text-[10px] tracking-[0.35em] uppercase text-black/30 font-semibold mb-2">Payment Confirmed</p>
         <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.2rem', letterSpacing: '0.05em', lineHeight: 1 }} className="mb-4">
-          Your vendor PDF has been sent!
+          You're in!
         </h2>
         <p className="text-[13px] text-black/50 leading-relaxed max-w-xs">
-          Your vendor guide has been sent to <span className="text-black font-semibold">{form.email}</span>. Check your inbox.
+          Your exclusive vendor list has been sent to <span className="text-black font-semibold">{form.email}</span>. Check your inbox to start shopping.
         </p>
       </div>
     )
@@ -123,12 +123,12 @@ function VendorForm() {
     <div className="pt-8 pb-28 px-5 max-w-2xl mx-auto">
 
       {/* Header */}
-      <p className="text-[9px] tracking-[0.4em] uppercase text-black/25 font-semibold mb-2">Become a Vendor</p>
+      <p className="text-[9px] tracking-[0.4em] uppercase text-black/25 font-semibold mb-2">Jazzy's Showcase</p>
       <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '2.4rem', letterSpacing: '0.04em', lineHeight: 1 }} className="mb-2">
-        Sell on Jazzy's Drop Shop
+        Shop With Personal Vendors
       </h1>
       <p className="text-[13px] text-black/50 leading-relaxed mb-8 max-w-sm">
-        Get everything you need to start selling. One-time fee — no monthly charges.
+        Get exclusive access to our curated vendor list. One-time fee — shop directly with high quality vendors.
       </p>
 
       {/* Two-col layout on desktop */}
@@ -136,7 +136,7 @@ function VendorForm() {
 
         {/* Left: perks */}
         <div>
-          <p className="text-[9px] tracking-[0.35em] uppercase text-black/30 font-semibold mb-4">What's included</p>
+          <p className="text-[9px] tracking-[0.35em] uppercase text-black/30 font-semibold mb-4">What you get</p>
           <div className="flex flex-col gap-3 mb-8">
             {PERKS.map((perk, i) => (
               <div key={i} className="flex items-start gap-3">
@@ -156,7 +156,7 @@ function VendorForm() {
             <p style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '3rem', letterSpacing: '0.03em', lineHeight: 1 }}>
               ${displayFee.toFixed(2)}
             </p>
-            <p className="text-[11px] text-white/40 mt-1">Instant access after payment</p>
+            <p className="text-[11px] text-white/40 mt-1">Vendor list sent to your email instantly</p>
           </div>
         </div>
 
@@ -206,11 +206,11 @@ function VendorForm() {
             disabled={loading || !stripe}
             className="w-full bg-black text-white py-[18px] text-[10px] tracking-[0.3em] uppercase font-bold active:scale-[0.99] transition-all rounded-2xl disabled:opacity-30"
           >
-            {loading ? 'Processing…' : `Pay $${displayFee.toFixed(2)} — Get Access`}
+            {loading ? 'Processing…' : `Pay $${displayFee.toFixed(2)} — Get Vendor List`}
           </button>
 
           <p className="text-[10px] text-black/25 text-center leading-relaxed">
-            Secure payment via Stripe. PDF sent to your email instantly after payment.
+            Secure payment via Stripe. Vendor list sent to your email instantly after payment.
           </p>
         </form>
       </div>
