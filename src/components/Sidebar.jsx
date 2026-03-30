@@ -21,7 +21,7 @@ export default function Sidebar({ isOpen, onClose, activePage, onNavigate }) {
           <span
             style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '1.2rem', letterSpacing: '0.15em', color: '#000' }}
           >
-            JAZZY'S DROP SHOP
+            JAZZY'S MARKETPLACE
           </span>
           <button
             onClick={onClose}
