@@ -31,22 +31,22 @@ export default function ProductPage({ product, onAddToCart }) {
   }
 
   return (
-    <div className="min-h-screen pb-28 ">
-      <div className="grid mt-8 sm:grid-cols-2 gap-0 md:gap-10 p-5 sm:p-12">
+    <div className="min-h-screen pb-28 overflow-x-hidden">
+      <div className="grid mt-8 sm:grid-cols-2 gap-8 md:gap-10 px-4 sm:px-12 max-w-5xl mx-auto">
 
         {/* ── LEFT: Media ── */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 w-full min-w-0">
           {/* Main image */}
-          <div className="w-full relative bg-gray-50" style={{ aspectRatio: '1/1' }}>
+          <div className="w-full relative bg-gray-50 rounded-3xl overflow-hidden" style={{ aspectRatio: '1/1' }}>
             {!imgLoaded && (
               <div className="absolute inset-0 animate-pulse bg-gradient-to-b from-gray-100 to-gray-50" />
             )}
             <img
-              key={activeImg} 
+              key={activeImg}
               src={images[activeImg]}
               alt={product.name}
               onLoad={() => setImgLoaded(true)}
-              className={`w-full h-full rounded-3xl object-cover transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+              className={`w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
             />
             {onSale && (
               <span className="absolute top-4 left-4 bg-black text-white text-[9px] font-bold px-3 py-1 rounded-full tracking-widest uppercase">
@@ -57,7 +57,7 @@ export default function ProductPage({ product, onAddToCart }) {
 
           {/* Thumbnails */}
           {images.length > 1 && (
-            <div className="flex gap-2 px-5 md:px-0 overflow-x-auto pb-1">
+            <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
               {images.map((img, i) => (
                 <button
                   key={i}
@@ -76,7 +76,7 @@ export default function ProductPage({ product, onAddToCart }) {
         </div>
 
         {/* ── RIGHT: Info ── */}
-        <div className="px-5 md:px-0 pt-5 md:pt-0 flex flex-col gap-5 md:justify-start">
+        <div className="w-full min-w-0 pt-2 md:pt-0 flex flex-col gap-5 md:justify-start">
 
           {/* Category */}
           <span className="text-[9px] tracking-[0.4em] uppercase text-black/30 font-semibold">

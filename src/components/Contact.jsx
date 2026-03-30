@@ -1,16 +1,28 @@
 import { useState } from 'react'
+import { createInquiry } from '../lib/api'
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', message: '' })
   const [sent, setSent] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [sendError, setSendError] = useState('')
 
   function handleChange(e) {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    setSent(true)
+    setSending(true)
+    setSendError('')
+    try {
+      await createInquiry(form)
+      setSent(true)
+    } catch {
+      setSendError('Something went wrong. Please try again.')
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -69,11 +81,13 @@ export default function Contact() {
             />
           </div>
 
+          {sendError && <p className="text-xs text-red-500">{sendError}</p>}
           <button
             type="submit"
-            className="w-full bg-black text-white py-4 text-xs tracking-[0.2em] uppercase font-medium hover:bg-gray-800 active:scale-[0.98] transition-all duration-200 mt-2"
+            disabled={sending}
+            className="w-full bg-black text-white py-4 text-xs tracking-[0.2em] uppercase font-medium hover:bg-gray-800 active:scale-[0.98] transition-all duration-200 mt-2 disabled:opacity-50"
           >
-            Send message
+            {sending ? 'Sending...' : 'Send message'}
           </button>
         </form>
       )}

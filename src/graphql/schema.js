@@ -3,6 +3,7 @@ export const typeDefs = /* GraphQL */ `
     products(category: String): [Product!]!
     product(id: Int!): Product
     orders: [Order!]!
+    inquiries: [Inquiry!]!
   }
 
   type Mutation {
@@ -14,6 +15,8 @@ export const typeDefs = /* GraphQL */ `
     deleteProduct(id: Int!): Boolean!
 
     createOrder(input: OrderInput!): Order!
+    createInquiry(name: String!, email: String!, message: String!): Inquiry!
+    markInquiryRead(id: Int!): Inquiry!
   }
 
   input ProductInput {
@@ -102,5 +105,14 @@ export const typeDefs = /* GraphQL */ `
   type AuthPayload {
     token: String!
     user:  User!
+  }
+
+  type Inquiry {
+    id:        Int!
+    name:      String!
+    email:     String!
+    message:   String!
+    read:      Boolean!
+    createdAt: String!
   }
 `

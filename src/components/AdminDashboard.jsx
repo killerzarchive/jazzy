@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { createProduct, updateProduct, deleteProduct, getOrders } from '../lib/api'
+import { createProduct, updateProduct, deleteProduct, getOrders, getInquiries, markInquiryRead } from '../lib/api'
 import { uploadProductImage } from '../lib/supabase'
 
 const SHOE_SIZES = ['4','4.5','5','5.5','6','6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','11.5','12','13','14']
@@ -30,6 +30,8 @@ export default function AdminDashboard({ products, onProductsChange, categories 
   const [deleteConfirm, setDeleteConfirm] = useState(null)
   const [orders, setOrders]         = useState([])
   const [ordersLoading, setOrdersLoading] = useState(false)
+  const [inquiries, setInquiries]   = useState([])
+  const [inquiriesLoading, setInquiriesLoading] = useState(false)
   const [vendorFee, setVendorFee]       = useState('')
   const [feeLoading, setFeeLoading]     = useState(false)
   const [feeSaved, setFeeSaved]         = useState(false)
@@ -51,6 +53,10 @@ export default function AdminDashboard({ products, onProductsChange, categories 
     if (tab === 'orders') {
       setOrdersLoading(true)
       getOrders().then(setOrders).catch(() => {}).finally(() => setOrdersLoading(false))
+    }
+    if (tab === 'inquiries') {
+      setInquiriesLoading(true)
+      getInquiries().then(setInquiries).catch(() => {}).finally(() => setInquiriesLoading(false))
     }
     if (tab === 'settings') {
       fetch('/api/settings')

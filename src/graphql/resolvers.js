@@ -55,6 +55,12 @@ export const resolvers = {
       })
       return rows.map(toOrder)
     },
+
+    inquiries: async (_parent, _args, context) => {
+      requireAuth(context)
+      const rows = await prisma.inquiry.findMany({ orderBy: { createdAt: 'desc' } })
+      return rows.map((i) => ({ ...i, createdAt: i.createdAt.toISOString() }))
+    },
   },
 
   Mutation: {
@@ -153,6 +159,17 @@ export const resolvers = {
       })
 
       return toOrder(order)
+    },
+
+    createInquiry: async (_parent, { name, email, message }) => {
+      const i = await prisma.inquiry.create({ data: { name, email, message } })
+      return { ...i, createdAt: i.createdAt.toISOString() }
+    },
+
+    markInquiryRead: async (_parent, { id }, context) => {
+      requireAuth(context)
+      const i = await prisma.inquiry.update({ where: { id }, data: { read: true } })
+      return { ...i, createdAt: i.createdAt.toISOString() }
     },
   },
 }

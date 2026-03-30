@@ -93,6 +93,32 @@ export async function getOrders() {
   return data.orders
 }
 
+// ── Inquiries ────────────────────────────────────────────────
+const INQUIRY_FIELDS = `id name email message read createdAt`
+
+export async function createInquiry({ name, email, message }) {
+  const data = await gql(
+    `mutation CreateInquiry($name: String!, $email: String!, $message: String!) {
+      createInquiry(name: $name, email: $email, message: $message) { ${INQUIRY_FIELDS} }
+    }`,
+    { name, email, message }
+  )
+  return data.createInquiry
+}
+
+export async function getInquiries() {
+  const data = await gql(`query Inquiries { inquiries { ${INQUIRY_FIELDS} } }`)
+  return data.inquiries
+}
+
+export async function markInquiryRead(id) {
+  const data = await gql(
+    `mutation MarkInquiryRead($id: Int!) { markInquiryRead(id: $id) { ${INQUIRY_FIELDS} } }`,
+    { id }
+  )
+  return data.markInquiryRead
+}
+
 // ── Auth ────────────────────────────────────────────────────
 export async function signIn({ email, password }) {
   const data = await gql(
