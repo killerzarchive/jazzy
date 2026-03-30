@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 function dualSize(size) {
   const m = parseFloat(size)
@@ -16,6 +16,26 @@ export default function ProductPage({ product, onAddToCart }) {
   const [added, setAdded]               = useState(false)
   const [qty, setQty]                   = useState(1)
   const [sizeError, setSizeError]       = useState(false)
+  const touchStartX = useRef(null)
+
+  function handleTouchStart(e) {
+    touchStartX.current = e.touches[0].clientX
+  }
+
+  function handleTouchEnd(e) {
+    if (touchStartX.current === null) return
+    const diff = touchStartX.current - e.changedTouches[0].clientX
+    if (Math.abs(diff) < 40) return
+    if (diff > 0) {
+      // swipe left → next
+      setActiveImg((i) => (i + 1) % images.length)
+    } else {
+      // swipe right → prev
+      setActiveImg((i) => (i - 1 + images.length) % images.length)
+    }
+    setImgLoaded(false)
+    touchStartX.current = null
+  }
 
   const onSale = product.originalPrice && product.originalPrice > product.price
 
@@ -36,8 +56,13 @@ export default function ProductPage({ product, onAddToCart }) {
 
         {/* ── LEFT: Media ── */}
         <div className="flex flex-col gap-3 w-full min-w-0">
-          {/* Main image */}
-          <div className="w-full relative bg-gray-50 rounded-3xl overflow-hidden" style={{ aspectRatio: '1/1' }}>
+          {/* Main image carousel */}
+          <div
+            className="w-full relative bg-gray-50 rounded-3xl overflow-hidden select-none"
+            style={{ aspectRatio: '1/1' }}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
             {!imgLoaded && (
               <div className="absolute inset-0 animate-pulse bg-gradient-to-b from-gray-100 to-gray-50" />
             )}
@@ -47,11 +72,52 @@ export default function ProductPage({ product, onAddToCart }) {
               alt={product.name}
               onLoad={() => setImgLoaded(true)}
               className={`w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+              draggable={false}
             />
             {onSale && (
               <span className="absolute top-4 left-4 bg-black text-white text-[9px] font-bold px-3 py-1 rounded-full tracking-widest uppercase">
                 Sale
               </span>
+            )}
+
+            {/* Prev / Next arrows — only when multiple images */}
+            {images.length > 1 && (
+              <>
+                <button
+                  onClick={() => { setActiveImg((i) => (i - 1 + images.length) % images.length); setImgLoaded(false) }}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{ background: 'rgba(0,0,0,0.35)' }}
+                >
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => { setActiveImg((i) => (i + 1) % images.length); setImgLoaded(false) }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{ background: 'rgba(0,0,0,0.35)' }}
+                >
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+
+                {/* Dot indicators */}
+                <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5">
+                  {images.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => { setActiveImg(i); setImgLoaded(false) }}
+                      className="rounded-full transition-all duration-200"
+                      style={{
+                        width: activeImg === i ? 18 : 6,
+                        height: 6,
+                        background: activeImg === i ? '#fff' : 'rgba(255,255,255,0.5)',
+                      }}
+                    />
+                  ))}
+                </div>
+              </>
             )}
           </div>
 
