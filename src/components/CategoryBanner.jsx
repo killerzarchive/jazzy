@@ -27,7 +27,7 @@ export default function CategoryBanner({ onNavigate, categories }) {
               alt={cat.name}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
-            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
+           
           
           </button>
         ))}
