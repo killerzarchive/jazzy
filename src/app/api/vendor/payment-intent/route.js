@@ -1,7 +1,5 @@
 import Stripe from 'stripe'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '../../../../lib/prisma'
 
 export async function POST(req) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
