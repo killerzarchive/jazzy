@@ -12,25 +12,8 @@ export default function Hero({ onShopAll }) {
 
 
       {/* Content — bottom left */}
-      <div className="absolute bottom-0 left-0 right-0 px-[5vw] pb-[4vw]">
-        <p
-          className="uppercase font-semibold mb-[1vw]"
-          style={{ fontSize: 'clamp(6px, 1.2vw, 9px)', letterSpacing: '0.4em', color: 'rgba(255,255,255,0.5)' }}
-        >
-          New Drop — Limited Stock
-        </p>
-
-        <h1
-          className="text-white leading-none mb-[2.5vw]"
-          style={{
-            fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: 'clamp(1.2rem, 6vw, 3.5rem)',
-            letterSpacing: '0.02em',
-            lineHeight: 0.88,
-          }}
-        >
-          UNTIL IT'S ALL GONE
-        </h1>
+      <div className="absolute bottom-0 left-0 right-0 px-3 pb-2">
+       
 
         <div className="flex items-center gap-4">
           <button
