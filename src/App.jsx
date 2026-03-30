@@ -67,14 +67,19 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [cartCount, setCartCount] = useState(0);
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [cartItems, setCartItems] = useState(readCart);
   const [searchOpen, setSearchOpen] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
 
-  // Fetch products from API (falls back to static if server is down)
+  // Fetch products and categories
   useEffect(() => {
     getProducts()
       .then(setProducts)
+      .catch(() => {});
+    fetch('/api/categories')
+      .then((r) => r.json())
+      .then(({ categories }) => { if (categories) setCategories(categories) })
       .catch(() => {});
   }, []);
 
@@ -194,6 +199,7 @@ export default function App() {
         onSearchOpen={() => setSearchOpen(true)}
         activePage={activePage}
         onNavigate={navigate}
+        categories={categories}
       />
 
       <Search
@@ -223,6 +229,8 @@ export default function App() {
         <AdminDashboard
           products={products}
           onProductsChange={() => getProducts().then(setProducts).catch(() => {})}
+          categories={categories}
+          onCategoriesChange={() => fetch('/api/categories').then(r=>r.json()).then(({categories})=>{ if(categories) setCategories(categories) }).catch(()=>{})}
         />
       ) : (
         <div className="px-5">
@@ -274,7 +282,7 @@ export default function App() {
               <div className="-mx-5">
                 <Hero onShopAll={() => setCurrentSection("all")} />
               </div>
-              <CategoryBanner onNavigate={navigate} />
+              <CategoryBanner onNavigate={navigate} categories={categories} />
               <VendorBanner onNavigate={navigate} />
             </>
           )}

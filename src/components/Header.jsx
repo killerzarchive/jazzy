@@ -1,6 +1,12 @@
-import { navLinks } from '../data/products'
+const STATIC_START = [{ id: 'home', label: 'Home' }]
+const STATIC_END   = [{ id: 'contact', label: 'Contact' }, { id: 'vendor', label: 'Vendor' }]
 
-export default function Header({ onMenuOpen, cartCount, currentPage, onBack, onSignIn, onCartOpen, onSearchOpen, activePage, onNavigate, user }) {
+export default function Header({ onMenuOpen, cartCount, currentPage, onBack, onSignIn, onCartOpen, onSearchOpen, activePage, onNavigate, user, categories = [] }) {
+  const navLinks = [
+    ...STATIC_START,
+    ...categories.map((c) => ({ id: c.slug, label: c.name })),
+    ...STATIC_END,
+  ]
   return (
     <header className="sticky top-0 z-10 bg-white" >
 

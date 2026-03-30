@@ -1,11 +1,6 @@
-const CATEGORIES = [
-  { id: 'bags',        image: '/categories/bags.jpeg' },
-  { id: 'rugs',        image: '/categories/rugs.jpeg' },
-  { id: 'accessories', image: '/categories/accessories.jpeg' },
-  { id: 'footwear',    image: '/categories/footwear.jpeg' },
-]
+export default function CategoryBanner({ onNavigate, categories }) {
+  if (!categories?.length) return null
 
-export default function CategoryBanner({ onNavigate }) {
   return (
     <section className="pt-10 px-3 sm:px-9 pb-4">
       <h2
@@ -21,17 +16,24 @@ export default function CategoryBanner({ onNavigate }) {
         CATEGORIES
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        {CATEGORIES.map((cat) => (
+        {categories.map((cat) => (
           <button
-            key={cat.id}
-            onClick={() => onNavigate(cat.id)}
-            className="relative overflow-hidden rounded-2xl aspect-square "
+            key={cat.slug}
+            onClick={() => onNavigate(cat.slug)}
+            className="relative overflow-hidden rounded-2xl aspect-square group"
           >
             <img
-              src={cat.image}
-              alt={cat.id}
-              className="h-54 object-cover transition-transform duration-500 hover:scale-[1.03]"
+              src={cat.imageUrl}
+              alt={cat.name}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
+            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
+            <span
+              className="absolute bottom-3 left-3 text-white font-bold tracking-widest uppercase"
+              style={{ fontSize: 'clamp(9px, 2vw, 13px)' }}
+            >
+              {cat.name}
+            </span>
           </button>
         ))}
       </div>
