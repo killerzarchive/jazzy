@@ -9,8 +9,7 @@ export default function Hero({ onShopAll }) {
       />
 
       {/* Gradient layers */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent pointer-events-none" />
+
 
       {/* Content — bottom left */}
       <div className="absolute bottom-0 left-0 right-0 px-[5vw] pb-[4vw]">
