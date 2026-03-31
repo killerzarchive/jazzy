@@ -119,6 +119,34 @@ export async function markInquiryRead(id) {
   return data.markInquiryRead
 }
 
+// ── Rug Requests ─────────────────────────────────────────────
+const RUG_REQUEST_FIELDS = `id name email phone width height description imageUrl status createdAt`
+
+export async function createRugRequest(input) {
+  const data = await gql(
+    `mutation CreateRugRequest($input: RugRequestInput!) {
+      createRugRequest(input: $input) { ${RUG_REQUEST_FIELDS} }
+    }`,
+    { input }
+  )
+  return data.createRugRequest
+}
+
+export async function getRugRequests() {
+  const data = await gql(`query RugRequests { rugRequests { ${RUG_REQUEST_FIELDS} } }`)
+  return data.rugRequests
+}
+
+export async function updateRugRequestStatus(id, status) {
+  const data = await gql(
+    `mutation UpdateRugRequestStatus($id: Int!, $status: String!) {
+      updateRugRequestStatus(id: $id, status: $status) { ${RUG_REQUEST_FIELDS} }
+    }`,
+    { id, status }
+  )
+  return data.updateRugRequestStatus
+}
+
 // ── Auth ────────────────────────────────────────────────────
 export async function signIn({ email, password }) {
   const data = await gql(

@@ -61,6 +61,12 @@ export const resolvers = {
       const rows = await prisma.inquiry.findMany({ orderBy: { createdAt: 'desc' } })
       return rows.map((i) => ({ ...i, createdAt: i.createdAt.toISOString() }))
     },
+
+    rugRequests: async (_parent, _args, context) => {
+      requireAuth(context)
+      const rows = await prisma.rugRequest.findMany({ orderBy: { createdAt: 'desc' } })
+      return rows.map((r) => ({ ...r, createdAt: r.createdAt.toISOString() }))
+    },
   },
 
   Mutation: {
@@ -170,6 +176,17 @@ export const resolvers = {
       requireAuth(context)
       const i = await prisma.inquiry.update({ where: { id }, data: { read: true } })
       return { ...i, createdAt: i.createdAt.toISOString() }
+    },
+
+    createRugRequest: async (_parent, { input }) => {
+      const r = await prisma.rugRequest.create({ data: input })
+      return { ...r, createdAt: r.createdAt.toISOString() }
+    },
+
+    updateRugRequestStatus: async (_parent, { id, status }, context) => {
+      requireAuth(context)
+      const r = await prisma.rugRequest.update({ where: { id }, data: { status } })
+      return { ...r, createdAt: r.createdAt.toISOString() }
     },
   },
 }

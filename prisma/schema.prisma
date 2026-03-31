@@ -82,6 +82,21 @@ model OrderItem {
   @@map("order_items")
 }
 
+model RugRequest {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String
+  phone       String?
+  width       String
+  height      String
+  description String
+  imageUrl    String?  @map("image_url")
+  status      String   @default("pending")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("rug_requests")
+}
+
 model Inquiry {
   id        Int      @id @default(autoincrement())
   name      String

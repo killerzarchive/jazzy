@@ -4,6 +4,7 @@ export const typeDefs = /* GraphQL */ `
     product(id: Int!): Product
     orders: [Order!]!
     inquiries: [Inquiry!]!
+    rugRequests: [RugRequest!]!
   }
 
   type Mutation {
@@ -17,6 +18,8 @@ export const typeDefs = /* GraphQL */ `
     createOrder(input: OrderInput!): Order!
     createInquiry(name: String!, email: String!, message: String!): Inquiry!
     markInquiryRead(id: Int!): Inquiry!
+    createRugRequest(input: RugRequestInput!): RugRequest!
+    updateRugRequestStatus(id: Int!, status: String!): RugRequest!
   }
 
   input ProductInput {
@@ -105,6 +108,29 @@ export const typeDefs = /* GraphQL */ `
   type AuthPayload {
     token: String!
     user:  User!
+  }
+
+  input RugRequestInput {
+    name:        String!
+    email:       String!
+    phone:       String
+    width:       String!
+    height:      String!
+    description: String!
+    imageUrl:    String
+  }
+
+  type RugRequest {
+    id:          Int!
+    name:        String!
+    email:       String!
+    phone:       String
+    width:       String!
+    height:      String!
+    description: String!
+    imageUrl:    String
+    status:      String!
+    createdAt:   String!
   }
 
   type Inquiry {

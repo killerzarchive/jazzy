@@ -16,6 +16,7 @@ import CategoryBanner from "./components/CategoryBanner";
 import VendorBanner from "./components/VendorBanner";
 import AdminDashboard from "./components/AdminDashboard";
 import VendorPage from "./components/VendorPage";
+import RugRequestDialog from "./components/RugRequestDialog";
 import { getProducts } from "./lib/api";
 
 // ── localStorage cart (no login required for shoppers) ──
@@ -71,6 +72,7 @@ export default function App() {
   const [cartItems, setCartItems] = useState(readCart);
   const [searchOpen, setSearchOpen] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
+  const [rugDialogOpen, setRugDialogOpen] = useState(false);
 
   // Fetch products and categories
   useEffect(() => {
@@ -225,6 +227,8 @@ export default function App() {
         onNavigate={navigate}
       />
 
+      <RugRequestDialog isOpen={rugDialogOpen} onClose={() => setRugDialogOpen(false)} />
+
       {activePage === "admin" && user ? (
         <AdminDashboard
           products={products}
@@ -258,9 +262,22 @@ export default function App() {
             <ProductPage product={currentProduct} onAddToCart={handleAddToCart} />
           ) : currentSection ? (
             <div className="pt-7 p-4 sm:p-8 pb-12">
-              <p className="text-[9px] tracking-[0.35em] uppercase text-black/30 font-bold mb-5 capitalize">
-                {currentSection}
-              </p>
+              <div className="flex items-center justify-between mb-5">
+                <p className="text-[9px] tracking-[0.35em] uppercase text-black/30 font-bold capitalize">
+                  {currentSection}
+                </p>
+                {currentSection === 'rugs' && (
+                  <button
+                    onClick={() => setRugDialogOpen(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-white text-[10px] tracking-[0.15em] uppercase font-bold"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Custom Rug Order
+                  </button>
+                )}
+              </div>
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-x-3 gap-y-6">
                 {sectionProducts.map((p) => (
                   <ProductCard
@@ -272,9 +289,17 @@ export default function App() {
                 ))}
               </div>
               {sectionProducts.length === 0 && (
-                <p className="text-center text-black/20 py-20 text-sm tracking-wide">
-                  No products yet.
-                </p>
+                <div className="flex flex-col items-center py-20 gap-4">
+                  <p className="text-center text-black/20 text-sm tracking-wide">No products yet.</p>
+                  {currentSection === 'rugs' && (
+                    <button
+                      onClick={() => setRugDialogOpen(true)}
+                      className="px-6 py-3 rounded-2xl bg-black text-white text-[11px] tracking-[0.2em] uppercase font-bold"
+                    >
+                      Request a Custom Rug
+                    </button>
+                  )}
+                </div>
               )}
             </div>
           ) : (

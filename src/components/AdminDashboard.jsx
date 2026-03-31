@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { createProduct, updateProduct, deleteProduct, getOrders, getInquiries, markInquiryRead } from '../lib/api'
+import { createProduct, updateProduct, deleteProduct, getOrders, getInquiries, markInquiryRead, getRugRequests, updateRugRequestStatus } from '../lib/api'
 import { uploadProductImage } from '../lib/supabase'
 
 const SHOE_SIZES = ['4','4.5','5','5.5','6','6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','11.5','12','13','14']
@@ -32,6 +32,8 @@ export default function AdminDashboard({ products, onProductsChange, categories 
   const [ordersLoading, setOrdersLoading] = useState(false)
   const [inquiries, setInquiries]   = useState([])
   const [inquiriesLoading, setInquiriesLoading] = useState(false)
+  const [rugRequests, setRugRequests] = useState([])
+  const [rugRequestsLoading, setRugRequestsLoading] = useState(false)
   const [vendorFee, setVendorFee]       = useState('')
   const [feeLoading, setFeeLoading]     = useState(false)
   const [feeSaved, setFeeSaved]         = useState(false)
@@ -57,6 +59,10 @@ export default function AdminDashboard({ products, onProductsChange, categories 
     if (tab === 'inquiries') {
       setInquiriesLoading(true)
       getInquiries().then(setInquiries).catch(() => {}).finally(() => setInquiriesLoading(false))
+    }
+    if (tab === 'rugrequests') {
+      setRugRequestsLoading(true)
+      getRugRequests().then(setRugRequests).catch(() => {}).finally(() => setRugRequestsLoading(false))
     }
     if (tab === 'settings') {
       fetch('/api/settings')
@@ -300,7 +306,7 @@ export default function AdminDashboard({ products, onProductsChange, categories 
 
       {/* Tabs */}
       <div className="flex mb-8 overflow-x-auto" style={{ borderBottom: '1px solid #f0f0f0' }}>
-        {[['add', editingId ? 'Edit Product' : 'New Listing'], ['listings', `Products (${products.length})`], ['orders', `Orders (${orders.length})`], ['categories', `Categories (${categories.length})`], ['inquiries', `Inquiries (${inquiries.length})`], ['settings', 'Settings']].map(([id, label]) => (
+        {[['add', editingId ? 'Edit Product' : 'New Listing'], ['listings', `Products (${products.length})`], ['orders', `Orders (${orders.length})`], ['categories', `Categories (${categories.length})`], ['inquiries', `Inquiries (${inquiries.length})`], ['rugrequests', `Rug Requests (${rugRequests.length})`], ['settings', 'Settings']].map(([id, label]) => (
           <button
             key={id}
             onClick={() => { setTab(id); if (id !== 'add') cancelEdit() }}
@@ -770,6 +776,66 @@ export default function AdminDashboard({ products, onProductsChange, categories 
                       <p className="text-[9px] text-black/20 font-mono truncate ml-4">{order.stripePaymentId}</p>
                     )}
                   </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── RUG REQUESTS ── */}
+      {tab === 'rugrequests' && (
+        <div>
+          {rugRequestsLoading ? (
+            <div className="py-20 text-center">
+              <div className="w-5 h-5 border-2 border-black/10 border-t-black rounded-full animate-spin mx-auto" />
+            </div>
+          ) : rugRequests.length === 0 ? (
+            <div className="py-20 text-center">
+              <p className="text-[11px] text-black/20 tracking-[0.3em] uppercase font-semibold">No rug requests yet</p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {rugRequests.map((req) => (
+                <div key={req.id} className="rounded-2xl p-4" style={{ border: '1px solid #f0f0f0' }}>
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div>
+                      <p className="text-[13px] font-semibold text-black">{req.name}</p>
+                      <p className="text-[11px] text-black/40 mt-0.5">{req.email}{req.phone ? ` · ${req.phone}` : ''}</p>
+                    </div>
+                    <select
+                      value={req.status}
+                      onChange={async (e) => {
+                        const updated = await updateRugRequestStatus(req.id, e.target.value)
+                        setRugRequests((prev) => prev.map((r) => r.id === req.id ? updated : r))
+                      }}
+                      className="text-[10px] tracking-widest uppercase font-bold px-3 py-1.5 rounded-full border border-black/10 bg-white outline-none"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="quoted">Quoted</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="completed">Completed</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </div>
+
+                  <div className="flex gap-3 mb-3" style={{ borderTop: '1px solid #f8f8f8', paddingTop: '10px' }}>
+                    <div className="flex-1">
+                      <p className="text-[9px] tracking-[0.3em] uppercase text-black/25 font-semibold mb-1">Dimensions</p>
+                      <p className="text-[13px] font-semibold text-black">{req.width} × {req.height}</p>
+                    </div>
+                    {req.imageUrl && (
+                      <a href={req.imageUrl} target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
+                        <img src={req.imageUrl} alt="inspiration" className="w-16 h-16 rounded-xl object-cover" />
+                      </a>
+                    )}
+                  </div>
+
+                  <p className="text-[12px] text-black/60 leading-relaxed mb-3">{req.description}</p>
+
+                  <p className="text-[10px] text-black/25 font-medium">
+                    {new Date(req.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </p>
                 </div>
               ))}
             </div>
