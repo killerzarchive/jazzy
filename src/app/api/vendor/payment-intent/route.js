@@ -2,7 +2,10 @@ import Stripe from 'stripe'
 import { prisma } from '../../../../lib/prisma'
 
 export async function POST(req) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    maxNetworkRetries: 0,
+    httpClient: Stripe.createFetchHttpClient(),
+  })
 
   try {
     const { email, name } = await req.json()

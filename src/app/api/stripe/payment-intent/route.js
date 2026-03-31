@@ -1,7 +1,10 @@
 import Stripe from 'stripe'
 
 export async function POST(req) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { maxNetworkRetries: 0 })
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    maxNetworkRetries: 0,
+    httpClient: Stripe.createFetchHttpClient(),
+  })
   try {
     const { amount, email, firstName, lastName } = await req.json()
 
