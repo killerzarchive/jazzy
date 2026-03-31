@@ -65,6 +65,7 @@ function CheckoutForm({ cartItems, products, onBack, onSuccess }) {
   const [placed, setPlaced] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showReturnPolicy, setShowReturnPolicy] = useState(false)
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -294,7 +295,34 @@ function CheckoutForm({ cartItems, products, onBack, onSuccess }) {
         >
           {loading ? 'Processing…' : `Place Order · $${total.toFixed(2)}`}
         </button>
+        <p className="text-center mt-2">
+          <button
+            type="button"
+            onClick={() => setShowReturnPolicy(true)}
+            className="text-[10px] text-gray-400 underline underline-offset-2 tracking-wide"
+          >
+            View Return Policy
+          </button>
+        </p>
       </div>
+
+      {/* Return Policy Dialog */}
+      {showReturnPolicy && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-5">
+          <div className="bg-white rounded-3xl overflow-hidden max-w-sm w-full shadow-2xl">
+            <img src="/return.JPEG" alt="Return Policy" className="w-full object-contain" />
+            <div className="p-6">
+              <button
+                type="button"
+                onClick={() => setShowReturnPolicy(false)}
+                className="w-full bg-black text-white py-4 rounded-2xl text-[10px] tracking-[0.25em] uppercase font-bold hover:bg-gray-800 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </form>
   )
 }
