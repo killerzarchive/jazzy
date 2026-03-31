@@ -35,7 +35,7 @@ export async function POST(req) {
       paymentIntentId: paymentIntent.id,
     })
   } catch (err) {
-    console.error('Stripe error:', err)
-    return Response.json({ error: err.message }, { status: 500 })
+    console.error('Stripe error:', err?.message, err?.type, err?.code)
+    return Response.json({ error: err.message, type: err?.type, code: err?.code }, { status: 500 })
   }
 }
