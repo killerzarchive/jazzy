@@ -129,11 +129,19 @@ export default function App() {
     setCartCount(cart.reduce((s, i) => s + i.qty, 0));
   }
 
+  const [showOrderSuccess, setShowOrderSuccess] = useState(false);
+
   function handleOrderSuccess() {
     localStorage.removeItem("cart");
     setCartItems([]);
     setCartCount(0);
-    setActivePage("order-success");
+    setShowOrderSuccess(true);
+  }
+
+  function closeOrderSuccess() {
+    setShowOrderSuccess(false);
+    setActivePage("home");
+    setCurrentSection(null);
   }
 
   function navigate(id) {
@@ -311,6 +319,32 @@ export default function App() {
               <VendorBanner onNavigate={navigate} />
             </>
           )}
+        </div>
+      )}
+
+      {/* Order Success Dialog */}
+      {showOrderSuccess && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-5">
+          <div className="bg-white rounded-3xl p-10 max-w-sm w-full text-center shadow-2xl flex flex-col items-center gap-5">
+            <div className="w-16 h-16 rounded-full bg-black flex items-center justify-center">
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight text-black mb-2">Thank You!</h2>
+              <p className="text-sm text-gray-500 font-light leading-relaxed">
+                Your order has been placed successfully.<br />
+                A confirmation has been sent to your email.
+              </p>
+            </div>
+            <button
+              onClick={closeOrderSuccess}
+              className="w-full bg-black text-white py-4 rounded-2xl text-xs tracking-[0.2em] uppercase font-bold hover:bg-gray-800 transition-colors"
+            >
+              Continue Shopping
+            </button>
+          </div>
         </div>
       )}
     </div>
