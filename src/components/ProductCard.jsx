@@ -25,7 +25,7 @@ export default function ProductCard({ product, onSelect, onAddToCart }) {
           src={product.image}
           alt={product.name}
           onLoad={() => setLoaded(true)}
-          className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-[1.04] ${loaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`w-full h-full object-cover transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
         />
         {onSale && (
           <span className="absolute top-3 left-3 bg-black text-white text-[9px] font-bold px-2.5 py-0.5 rounded-full tracking-wide uppercase">
@@ -38,7 +38,7 @@ export default function ProductCard({ product, onSelect, onAddToCart }) {
           className={`absolute bottom-3 right-3 w-8 h-8 rounded-full border flex items-center justify-center shadow-sm transition-all duration-200 ${
             added
               ? 'bg-black text-white border-black scale-95'
-              : 'bg-white text-black border-black/10 opacity-0 group-hover:opacity-100 hover:bg-black hover:text-white'
+              : 'bg-white text-black border-black/10 hover:bg-black hover:text-white'
           }`}
         >
           {added ? (
