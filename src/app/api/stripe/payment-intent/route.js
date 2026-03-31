@@ -1,44 +1,60 @@
-import Stripe from 'stripe'
-
 export async function POST(req) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    maxNetworkRetries: 0,
-    httpClient: Stripe.createFetchHttpClient(),
-  })
   try {
     const { amount, email, firstName, lastName } = await req.json()
+    const key = process.env.STRIPE_SECRET_KEY
 
-    // Find existing Stripe customer or create a new one
-    const existing = await stripe.customers.list({ email: email.toLowerCase(), limit: 1 })
-    let customer
-    if (existing.data.length > 0) {
-      customer = existing.data[0]
-      // Update name in case it changed
-      await stripe.customers.update(customer.id, {
-        name: `${firstName} ${lastName}`,
+    if (!key) return Response.json({ error: 'Stripe key not configured' }, { status: 500 })
+
+    const auth = 'Basic ' + Buffer.from(key + ':').toString('base64')
+
+    // Find or create customer
+    const searchRes = await fetch(
+      `https://api.stripe.com/v1/customers?email=${encodeURIComponent(email.toLowerCase())}&limit=1`,
+      { headers: { Authorization: auth } }
+    )
+    const searchData = await searchRes.json()
+
+    let customerId
+    if (searchData.data?.length > 0) {
+      customerId = searchData.data[0].id
+      await fetch(`https://api.stripe.com/v1/customers/${customerId}`, {
+        method: 'POST',
+        headers: { Authorization: auth, 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ name: `${firstName} ${lastName}` }),
       })
     } else {
-      customer = await stripe.customers.create({
-        email: email.toLowerCase(),
-        name: `${firstName} ${lastName}`,
+      const createRes = await fetch('https://api.stripe.com/v1/customers', {
+        method: 'POST',
+        headers: { Authorization: auth, 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ email: email.toLowerCase(), name: `${firstName} ${lastName}` }),
       })
+      const created = await createRes.json()
+      customerId = created.id
     }
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // dollars → cents
-      currency: 'usd',
-      customer: customer.id,
-      receipt_email: email.toLowerCase(),
-      payment_method_types: ['card'],
+    // Create PaymentIntent
+    const piRes = await fetch('https://api.stripe.com/v1/payment_intents', {
+      method: 'POST',
+      headers: { Authorization: auth, 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        amount: Math.round(amount * 100).toString(),
+        currency: 'usd',
+        customer: customerId,
+        receipt_email: email.toLowerCase(),
+        'payment_method_types[]': 'card',
+      }),
     })
+    const pi = await piRes.json()
+
+    if (pi.error) return Response.json({ error: pi.error.message }, { status: 400 })
 
     return Response.json({
-      clientSecret: paymentIntent.client_secret,
-      customerId: customer.id,
-      paymentIntentId: paymentIntent.id,
+      clientSecret: pi.client_secret,
+      customerId,
+      paymentIntentId: pi.id,
     })
   } catch (err) {
-    console.error('Stripe error:', err?.message, err?.type, err?.code)
-    return Response.json({ error: err.message, type: err?.type, code: err?.code }, { status: 500 })
+    console.error('Payment intent error:', err)
+    return Response.json({ error: err.message }, { status: 500 })
   }
 }
