@@ -306,7 +306,7 @@ export default function AdminDashboard({ products, onProductsChange, categories 
 
       {/* Tabs */}
       <div className="flex mb-8 overflow-x-auto" style={{ borderBottom: '1px solid #f0f0f0' }}>
-        {[['add', editingId ? 'Edit Product' : 'New Listing'], ['listings', `Products (${products.length})`], ['orders', `Orders (${orders.length})`], ['categories', `Categories (${categories.length})`], ['inquiries', `Inquiries (${inquiries.length})`], ['rugrequests', `Rug Requests (${rugRequests.length})`], ['settings', 'Settings']].map(([id, label]) => (
+        {[['add', editingId ? 'Edit Product' : 'New Listing'], ['listings', `Products (${products.length})`], ['orders', `Orders (${orders.length})`], ['categories', `Categories (${categories.length})`], ['inquiries', `Inquiries (${inquiries.length})`], ['rugrequests', `Rug Requests (${rugRequests.length})`], ['settings', 'Settings'], ['account', 'Account']].map(([id, label]) => (
           <button
             key={id}
             onClick={() => { setTab(id); if (id !== 'add') cancelEdit() }}
@@ -896,6 +896,135 @@ export default function AdminDashboard({ products, onProductsChange, categories 
           )}
         </div>
       )}
+
+      {tab === 'account' && (
+        <AccountTab token={localStorage.getItem('token')} />
+      )}
+    </div>
+  )
+}
+
+function AccountTab({ token }) {
+  const [emailForm, setEmailForm] = useState({ email: '' })
+  const [pwForm, setPwForm]       = useState({ currentPassword: '', newPassword: '', confirmPassword: '' })
+  const [emailMsg, setEmailMsg]   = useState('')
+  const [emailErr, setEmailErr]   = useState('')
+  const [pwMsg, setPwMsg]         = useState('')
+  const [pwErr, setPwErr]         = useState('')
+  const [emailLoading, setEmailLoading] = useState(false)
+  const [pwLoading, setPwLoading]       = useState(false)
+
+  async function handleEmailUpdate(e) {
+    e.preventDefault()
+    setEmailMsg(''); setEmailErr('')
+    setEmailLoading(true)
+    try {
+      const res = await fetch('/api/graphql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          query: `mutation UpdateEmail($email: String!) { updateEmail(email: $email) }`,
+          variables: { email: emailForm.email },
+        }),
+      })
+      const { data, errors } = await res.json()
+      if (errors?.length) throw new Error(errors[0].message)
+      if (data.updateEmail) setEmailMsg('Email updated successfully.')
+      else throw new Error('Update failed.')
+    } catch (err) {
+      setEmailErr(err.message)
+    } finally {
+      setEmailLoading(false)
+    }
+  }
+
+  async function handlePasswordUpdate(e) {
+    e.preventDefault()
+    setPwMsg(''); setPwErr('')
+    if (pwForm.newPassword !== pwForm.confirmPassword) {
+      setPwErr('New passwords do not match.'); return
+    }
+    if (pwForm.newPassword.length < 6) {
+      setPwErr('Password must be at least 6 characters.'); return
+    }
+    setPwLoading(true)
+    try {
+      const res = await fetch('/api/graphql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          query: `mutation UpdatePassword($currentPassword: String!, $newPassword: String!) { updatePassword(currentPassword: $currentPassword, newPassword: $newPassword) }`,
+          variables: { currentPassword: pwForm.currentPassword, newPassword: pwForm.newPassword },
+        }),
+      })
+      const { data, errors } = await res.json()
+      if (errors?.length) throw new Error(errors[0].message)
+      if (data.updatePassword) { setPwMsg('Password updated successfully.'); setPwForm({ currentPassword: '', newPassword: '', confirmPassword: '' }) }
+      else throw new Error('Update failed.')
+    } catch (err) {
+      setPwErr(err.message)
+    } finally {
+      setPwLoading(false)
+    }
+  }
+
+  return (
+    <div className="max-w-md flex flex-col gap-10">
+      {/* Update Email */}
+      <div>
+        <p className="text-[9px] tracking-[0.35em] uppercase text-black/30 font-semibold mb-5">Update Email</p>
+        <form onSubmit={handleEmailUpdate} className="flex flex-col gap-5">
+          <div className="flex flex-col gap-2">
+            <label className="text-[9px] tracking-[0.35em] uppercase text-black/30 font-semibold">New Email</label>
+            <input
+              type="email" required value={emailForm.email}
+              onChange={(e) => setEmailForm({ email: e.target.value })}
+              placeholder="new@email.com"
+              className="border-b border-gray-200 focus:border-black outline-none py-2.5 text-sm text-black bg-transparent transition-colors"
+            />
+          </div>
+          {emailErr && <p className="text-xs text-red-500">{emailErr}</p>}
+          {emailMsg && <p className="text-xs text-green-600">{emailMsg}</p>}
+          <button
+            type="submit" disabled={emailLoading}
+            className="w-full bg-black text-white py-4 rounded-2xl text-[10px] tracking-[0.25em] uppercase font-bold hover:bg-gray-800 transition-colors disabled:opacity-40"
+          >
+            {emailLoading ? 'Saving…' : 'Update Email'}
+          </button>
+        </form>
+      </div>
+
+      <div style={{ borderTop: '1px solid #f0f0f0' }} />
+
+      {/* Update Password */}
+      <div>
+        <p className="text-[9px] tracking-[0.35em] uppercase text-black/30 font-semibold mb-5">Change Password</p>
+        <form onSubmit={handlePasswordUpdate} className="flex flex-col gap-5">
+          {[
+            { label: 'Current Password', key: 'currentPassword' },
+            { label: 'New Password', key: 'newPassword' },
+            { label: 'Confirm New Password', key: 'confirmPassword' },
+          ].map(({ label, key }) => (
+            <div key={key} className="flex flex-col gap-2">
+              <label className="text-[9px] tracking-[0.35em] uppercase text-black/30 font-semibold">{label}</label>
+              <input
+                type="password" required value={pwForm[key]}
+                onChange={(e) => setPwForm((f) => ({ ...f, [key]: e.target.value }))}
+                placeholder="••••••••"
+                className="border-b border-gray-200 focus:border-black outline-none py-2.5 text-sm text-black bg-transparent transition-colors"
+              />
+            </div>
+          ))}
+          {pwErr && <p className="text-xs text-red-500">{pwErr}</p>}
+          {pwMsg && <p className="text-xs text-green-600">{pwMsg}</p>}
+          <button
+            type="submit" disabled={pwLoading}
+            className="w-full bg-black text-white py-4 rounded-2xl text-[10px] tracking-[0.25em] uppercase font-bold hover:bg-gray-800 transition-colors disabled:opacity-40"
+          >
+            {pwLoading ? 'Saving…' : 'Update Password'}
+          </button>
+        </form>
+      </div>
     </div>
   )
 }

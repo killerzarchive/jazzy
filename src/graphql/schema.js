@@ -20,6 +20,9 @@ export const typeDefs = /* GraphQL */ `
     markInquiryRead(id: Int!): Inquiry!
     createRugRequest(input: RugRequestInput!): RugRequest!
     updateRugRequestStatus(id: Int!, status: String!): RugRequest!
+
+    updateEmail(email: String!): Boolean!
+    updatePassword(currentPassword: String!, newPassword: String!): Boolean!
   }
 
   input ProductInput {

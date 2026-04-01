@@ -188,5 +188,21 @@ export const resolvers = {
       const r = await prisma.rugRequest.update({ where: { id }, data: { status } })
       return { ...r, createdAt: r.createdAt.toISOString() }
     },
+
+    updateEmail: async (_parent, { email }, context) => {
+      requireAuth(context)
+      await prisma.user.update({ where: { id: context.userId }, data: { email } })
+      return true
+    },
+
+    updatePassword: async (_parent, { currentPassword, newPassword }, context) => {
+      requireAuth(context)
+      const existing = await prisma.user.findUnique({ where: { id: context.userId } })
+      const valid = await bcrypt.compare(currentPassword, existing.passwordHash)
+      if (!valid) throw new Error('Current password is incorrect.')
+      const passwordHash = await bcrypt.hash(newPassword, 10)
+      await prisma.user.update({ where: { id: context.userId }, data: { passwordHash } })
+      return true
+    },
   },
 }
