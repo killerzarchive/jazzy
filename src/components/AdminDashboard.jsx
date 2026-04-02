@@ -305,12 +305,12 @@ export default function AdminDashboard({ products, onProductsChange, categories 
       </div>
 
       {/* Tabs */}
-      <div className="flex mb-8 overflow-x-auto" style={{ borderBottom: '1px solid #f0f0f0' }}>
+      <div className="flex flex-wrap mb-8 gap-y-1" style={{ borderBottom: '1px solid #f0f0f0' }}>
         {[['add', editingId ? 'Edit Product' : 'New Listing'], ['listings', `Products (${products.length})`], ['orders', `Orders (${orders.length})`], ['categories', `Categories (${categories.length})`], ['inquiries', `Inquiries (${inquiries.length})`], ['rugrequests', `Rug Requests (${rugRequests.length})`], ['settings', 'Settings'], ['account', 'Account']].map(([id, label]) => (
           <button
             key={id}
             onClick={() => { setTab(id); if (id !== 'add') cancelEdit() }}
-            className="mr-7 pb-3 text-[11px] tracking-[0.2em] uppercase font-bold transition-all whitespace-nowrap flex-shrink-0"
+            className="mr-6 pb-3 text-[10px] tracking-[0.15em] uppercase font-bold transition-all whitespace-nowrap"
             style={{
               color: tab === id ? '#000' : '#bbb',
               borderBottom: tab === id ? '2px solid #000' : '2px solid transparent',
