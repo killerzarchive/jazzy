@@ -295,15 +295,13 @@ function CheckoutForm({ cartItems, products, onBack, onSuccess }) {
         >
           {loading ? 'Processing…' : `Place Order · $${total.toFixed(2)}`}
         </button>
-        <p className="text-center mt-2">
-          <button
-            type="button"
-            onClick={() => setShowReturnPolicy(true)}
-            className="text-[10px] text-gray-400 underline underline-offset-2 tracking-wide"
-          >
-            View Return Policy
-          </button>
-        </p>
+        <button
+          type="button"
+          onClick={() => setShowReturnPolicy(true)}
+          className="w-full mt-3 border border-gray-200 rounded-2xl py-4 text-[11px] tracking-[0.2em] uppercase font-bold text-gray-500 hover:border-black hover:text-black transition-all"
+        >
+          View Return Policy
+        </button>
       </div>
 
       {/* Return Policy Dialog */}
