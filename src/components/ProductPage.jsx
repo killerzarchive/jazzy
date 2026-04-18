@@ -5,6 +5,7 @@ const CLOTHING_SIZES = ['XS','S','M','L','XL','XXL','3XL']
 function displaySize(size) {
   if (CLOTHING_SIZES.includes(size)) return size
   const m = parseFloat(size)
+  if (isNaN(m)) return size
   const w = m + 1.5
   return `${m}M / ${Number.isInteger(w) ? w : w}W`
 }
