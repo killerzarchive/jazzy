@@ -8,6 +8,7 @@ const FALLBACK_CATEGORIES = ['footwear', 'bags', 'rugs', 'accessories', 'clothin
 
 function dualSize(size) {
   const m = parseFloat(size)
+  if (isNaN(m)) return size
   const w = m + 1.5
   return `${m}M / ${Number.isInteger(w) ? w : w}W`
 }
