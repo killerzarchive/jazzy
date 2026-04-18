@@ -54,7 +54,7 @@ export default function Sidebar({ isOpen, onClose, activePage, onNavigate }) {
         </nav>
 
         <div className="px-6 py-6 text-[9px] text-black/20 tracking-[0.3em] uppercase font-semibold">
-          © 2025 Jazzy's Drop Shop
+          © 2026 Jazzy's Drop Shop
         </div>
       </aside>
     </>
