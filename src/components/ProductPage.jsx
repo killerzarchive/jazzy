@@ -1,5 +1,7 @@
 import { useState, useRef } from 'react'
 
+const CLOTHING_SIZES = ['XS','S','M','L','XL','XXL','3XL']
+
 function displaySize(size) {
   const m = parseFloat(size)
   if (isNaN(m)) return size
@@ -9,7 +11,12 @@ function displaySize(size) {
 
 export default function ProductPage({ product, onAddToCart }) {
   const images = product.images?.length ? product.images : [product.image]
-  const sizes  = product.sizes || []
+  const allSizes = product.sizes || []
+  const sizes = product.category === 'clothing'
+    ? allSizes.filter(s => CLOTHING_SIZES.includes(s))
+    : product.category === 'footwear'
+      ? allSizes.filter(s => !isNaN(parseFloat(s)))
+      : allSizes
 
   const [activeImg, setActiveImg]       = useState(0)
   const [selectedSize, setSelectedSize] = useState(null)
