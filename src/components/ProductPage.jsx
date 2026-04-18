@@ -1,6 +1,9 @@
 import { useState, useRef } from 'react'
 
-function dualSize(size) {
+const CLOTHING_SIZES = ['XS','S','M','L','XL','XXL','3XL']
+
+function displaySize(size) {
+  if (CLOTHING_SIZES.includes(size)) return size
   const m = parseFloat(size)
   const w = m + 1.5
   return `${m}M / ${Number.isInteger(w) ? w : w}W`
@@ -187,7 +190,7 @@ export default function ProductPage({ product, onAddToCart }) {
                       ? { background: '#000', color: '#fff', borderColor: '#000' }
                       : { background: '#fff', color: '#333', borderColor: '#e0e0e0' }}
                   >
-                    {dualSize(size)}
+                    {displaySize(size)}
                   </button>
                 ))}
               </div>

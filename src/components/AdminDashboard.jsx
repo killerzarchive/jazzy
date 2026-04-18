@@ -3,6 +3,7 @@ import { createProduct, updateProduct, deleteProduct, getOrders, getInquiries, m
 import { uploadProductImage } from '../lib/supabase'
 
 const SHOE_SIZES = ['4','4.5','5','5.5','6','6.5','7','7.5','8','8.5','9','9.5','10','10.5','11','11.5','12','13','14']
+const CLOTHING_SIZES = ['XS','S','M','L','XL','XXL','3XL']
 const FALLBACK_CATEGORIES = ['footwear', 'bags', 'rugs', 'accessories', 'clothing', 'wallets', 'belts']
 
 function dualSize(size) {
@@ -168,7 +169,7 @@ export default function AdminDashboard({ products, onProductsChange, categories 
     }
   }
 
-  const sizeOptions = form.category === 'footwear' ? SHOE_SIZES : []
+  const sizeOptions = form.category === 'footwear' ? SHOE_SIZES : form.category === 'clothing' ? CLOTHING_SIZES : []
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target
